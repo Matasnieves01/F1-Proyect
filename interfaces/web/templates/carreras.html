@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Races</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <header class="bg-red-600 py-4 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <h1 class="text-3xl font-extrabold tracking-wide">F1 Races</h1>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Current Races -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold border-b-4 border-red-600 pb-2 mb-6">Current Races</h2>
+            <div class="grid gap-8 md:grid-cols-2">
+                {% for carrera in actuales %}
+                <div class="card bg-gray-800 p-6 rounded-lg shadow-lg transition-transform duration-300">
+                    <h3 class="text-xl font-bold text-red-500 mb-2">{{ carrera.nombre }}</h3>
+                    <p class="text-gray-400 mb-2">{{ carrera.lugar }}</p>
+                    <p>
+                        <span class="font-semibold">Start Date:</span> {{ carrera.fecha_inicio }}
+                    </p>
+                    <p class="mt-4 text-sm text-gray-300">{{ carrera.descripcion }}</p>
+                </div>
+                {% empty %}
+                <p class="text-gray-400">No current races.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Upcoming Races -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold border-b-4 border-red-600 pb-2 mb-6">Upcoming Races</h2>
+            <div class="grid gap-8 md:grid-cols-2">
+                {% for carrera in futuras %}
+                <div class="card bg-gray-800 p-6 rounded-lg shadow-lg transition-transform duration-300">
+                    <h3 class="text-xl font-bold text-red-500 mb-2">{{ carrera.nombre }}</h3>
+                    <p class="text-gray-400 mb-2">{{ carrera.lugar }}</p>
+                    <p>
+                        <span class="font-semibold">Start Date:</span> {{ carrera.fecha_inicio }}
+                    </p>
+                    <p class="mt-4 text-sm text-gray-300">{{ carrera.descripcion }}</p>
+                </div>
+                {% empty %}
+                <p class="text-gray-400">No upcoming races.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Past Races -->
+        <section>
+            <h2 class="text-2xl font-bold border-b-4 border-red-600 pb-2 mb-6">Past Races</h2>
+            <div class="grid gap-8 md:grid-cols-2">
+                {% for carrera in pasadas %}
+                <div class="card bg-gray-800 p-6 rounded-lg shadow-lg transition-transform duration-300">
+                    <h3 class="text-xl font-bold text-red-500 mb-2">{{ carrera.nombre }}</h3>
+                    <p class="text-gray-400 mb-2">{{ carrera.lugar }}</p>
+                    <p>
+                        <span class="font-semibold">Start Date:</span> {{ carrera.fecha_inicio }}
+                    </p>
+                    <p class="mt-4 text-sm text-gray-300">{{ carrera.descripcion }}</p>
+                </div>
+                {% empty %}
+                <p class="text-gray-400">No past races.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-center py-6 text-gray-400 border-t border-red-600">
+        © 2025 F1 Web
+    </footer>
+</body>
+</html>
