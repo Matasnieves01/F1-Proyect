@@ -24,17 +24,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY", default="clave_insegura")
 DEBUG = config("DEBUG", default=True, cast=bool)
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config("DB_NAME", default="f1db"),
-        'USER': config("DB_USER", default="postgres"),
-        'PASSWORD': config("DB_PASSWORD", default="postgres"),
-        'HOST': config("DB_HOST", default="localhost"),
-        'PORT': config("DB_PORT", default="5432"),
-    }
-}
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -62,12 +51,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'F1-Proyect.config.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, '../../interfaces', 'web', 'templates')],  # ahora buscará templates en /templates
+        'DIRS': [str(BASE_DIR / 'interfaces' / 'web' / 'templates')],  # ahora buscará templates en /templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,7 +70,7 @@ TEMPLATES = [
 ]
 
 
-WSGI_APPLICATION = 'config.asgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database

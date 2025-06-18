@@ -2,7 +2,9 @@ version: '3.9'
 
 services:
   web:
-    build: ..
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: f1web_django
     command: >
       sh -c "python manage.py migrate &&
@@ -11,7 +13,7 @@ services:
     volumes:
       - .:/app
     ports:
-      - "8087:8010"
+      - "8090:8010"
     environment:
       - DEBUG=1
       - SECRET_KEY=your-secret-key
