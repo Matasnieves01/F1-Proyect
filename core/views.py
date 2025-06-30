@@ -1,9 +1,17 @@
 import requests
 from django.shortcuts import render
 from datetime import datetime, timezone
+from use_cases.race_service import categorize_races
+from django.template.loader import get_template
 
 def index(request):
-    return render(request, 'index.html')
+    actuales, futuras, pasadas = categorize_races()
+    return render(request, 'index.html', {
+        'actuales': actuales,
+        'futuras': futuras,
+        'pasadas': pasadas
+    })
+
 
 # Create your views here.
 def carreras_view(request):
@@ -46,3 +54,19 @@ def carreras_view(request):
         'pasadas': pasadas,
     }
     return render(request, 'carreras.html', {'carreras': context})
+
+def test_template(request):
+    context = {
+        'actuales': [
+            {
+                'nombre': 'Gran Premio Test',
+                'lugar': 'Ciudad Test, País Test',
+                'fecha_inicio': datetime.now(),
+                'estado': 'En curso',
+                'descripcion': 'Circuito de prueba',
+            }
+        ],
+        'futuras': [],
+        'pasadas': [],
+    }
+    return render(request, 'index.html', context)
