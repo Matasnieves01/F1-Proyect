@@ -8,60 +8,123 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', 'Arial Black', Arial, sans-serif;
+            letter-spacing: 0.02em;
+        }
+        .f1-gradient {
+            background: linear-gradient(90deg, #e10600 0%, #15151e 100%);
+        }
+        .f1-border {
+            border-top: 4px solid #e10600;
         }
     </style>
 </head>
-<body class="bg-black text-white min-h-screen">
+<body class="bg-[#15151e] text-white min-h-screen">
 
     <!-- Header -->
-    <header class="bg-red-600 py-4 shadow-md">
+    <header class="f1-gradient py-5 shadow-lg">
         <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-            <h1 class="text-3xl font-bold tracking-wide">Fórmula 1</h1>
-            <nav class="space-x-6">
-                <a href="#" class="hover:text-gray-200">Inicio</a>
-                <a href="#" class="hover:text-gray-200">Carreras</a>
-                <a href="#" class="hover:text-gray-200">Blog</a>
-                <a href="#" class="hover:text-gray-200">Iniciar Sesión</a>
+            <h1 class="text-4xl font-extrabold tracking-widest text-white drop-shadow-lg">
+                <span class="text-[#e10600]">F1</span> Web
+            </h1>
+            <nav class="space-x-8 text-lg font-semibold">
+                <a href="#" class="hover:text-[#e10600] transition">Inicio</a>
+                <a href="#" class="hover:text-[#e10600] transition">Carreras</a>
+                <a href="#" class="hover:text-[#e10600] transition">Blog</a>
+                <a href="#" class="bg-[#e10600] px-4 py-2 rounded hover:bg-white hover:text-[#e10600] transition">Iniciar Sesión</a>
             </nav>
         </div>
     </header>
 
-    <!-- Contenido principal -->
-    <main class="max-w-5xl mx-auto px-4 mt-8">
-        <h2 class="text-2xl font-semibold border-b border-gray-700 pb-2 mb-4">Bienvenido a F1 Web</h2>
-        <p class="text-gray-400">Ultimas Noticias de Las Carreras.</p>
-        <div class="max-w-lg mx-auto grid gap-6 lg:grid-cols-2">
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto px-4 mt-12">
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold border-b-4 border-[#e10600] pb-2 mb-4">Bienvenido a F1 Web</h2>
+            <p class="text-gray-300 text-lg">Últimas Noticias de Las Carreras.</p>
+        </section>
+        <!-- Calendario de Carreras -->
+        <section>
+            <h2 class="text-2xl font-bold border-b-2 border-[#e10600] pb-2 mb-6">Calendario de Carreras</h2>
 
-        </div>
-    </main>
-    <main class="max-w-5xl mx-auto px-4 mt-8">
-        <h2 class="text-2xl font-semibold border-b border-gray-700 pb-2 mb-4">Calendario de Carreras</h2>
-        <div class="grid gap-6">
-            {% for carrera in carreras %}
-            <div class="bg-gray-900 rounded-lg p-5 shadow hover:bg-gray-800 transition">
-                <h3 class="text-xl font-bold text-red-500">{{ carrera.nombre }}</h3>
-                <p class="text-sm text-gray-400">{{ carrera.lugar }}</p>
-                <p class="mt-2">
-                    Fecha:
-                    <span class="font-semibold text-white">{{ carrera.fecha_inicio|date:"d M Y H:i" }}</span>
-                    -
-                    <span class="text-gray-400">{{ carrera.estado|capfirst }}</span>
-                </p>
-                {% if carrera.descripcion %}
-                <p class="mt-3 text-sm text-gray-300">
-                    {{ carrera.descripcion }}
-                </p>
-                {% endif %}
+            <!-- Carreras en curso -->
+            <div class="mb-8">
+                <h3 class="text-xl font-bold text-[#e10600] mb-4">En curso</h3>
+                <div class="grid gap-8 md:grid-cols-2">
+                    {% for carrera in actuales %}
+                    <div class="bg-[#22232b] rounded-xl p-6 shadow-lg f1-border hover:scale-105 hover:shadow-2xl transition transform duration-200">
+                        <h4 class="text-2xl font-extrabold text-[#e10600] mb-1 tracking-wide">{{ carrera.nombre }}</h4>
+                        <p class="text-base text-gray-400 mb-2">{{ carrera.lugar }}</p>
+                        <p class="mb-2">
+                            <span class="font-semibold text-white">Fecha:</span>
+                            <span class="font-semibold text-white">{{ carrera.fecha_inicio|date:"d M Y H:i" }}</span>
+                            <span class="ml-2 px-2 py-1 rounded bg-[#e10600] text-white text-xs font-bold uppercase">{{ carrera.estado|capfirst }}</span>
+                        </p>
+                        {% if carrera.descripcion %}
+                        <p class="mt-3 text-sm text-gray-300">
+                            {{ carrera.descripcion }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-400">No hay carreras en curso.</p>
+                    {% endfor %}
+                </div>
             </div>
-            {% empty %}
-            <p class="text-gray-400">No hay carreras registradas.</p>
-            {% endfor %}
-        </div>
+
+            <!-- Próximas carreras -->
+            <div class="mb-8">
+                <h3 class="text-xl font-bold text-[#e10600] mb-4">Próximas</h3>
+                <div class="grid gap-8 md:grid-cols-2">
+                    {% for carrera in futuras %}
+                    <div class="bg-[#22232b] rounded-xl p-6 shadow-lg f1-border hover:scale-105 hover:shadow-2xl transition transform duration-200">
+                        <h4 class="text-2xl font-extrabold text-[#e10600] mb-1 tracking-wide">{{ carrera.nombre }}</h4>
+                        <p class="text-base text-gray-400 mb-2">{{ carrera.lugar }}</p>
+                        <p class="mb-2">
+                            <span class="font-semibold text-white">Fecha:</span>
+                            <span class="font-semibold text-white">{{ carrera.fecha_inicio|date:"d M Y H:i" }}</span>
+                            <span class="ml-2 px-2 py-1 rounded bg-[#e10600] text-white text-xs font-bold uppercase">{{ carrera.estado|capfirst }}</span>
+                        </p>
+                        {% if carrera.descripcion %}
+                        <p class="mt-3 text-sm text-gray-300">
+                            {{ carrera.descripcion }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-400">No hay próximas carreras.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Carreras pasadas -->
+            <div>
+                <h3 class="text-xl font-bold text-[#e10600] mb-4">Finalizadas</h3>
+                <div class="grid gap-8 md:grid-cols-2">
+                    {% for carrera in pasadas %}
+                    <div class="bg-[#22232b] rounded-xl p-6 shadow-lg f1-border hover:scale-105 hover:shadow-2xl transition transform duration-200">
+                        <h4 class="text-2xl font-extrabold text-[#e10600] mb-1 tracking-wide">{{ carrera.nombre }}</h4>
+                        <p class="text-base text-gray-400 mb-2">{{ carrera.lugar }}</p>
+                        <p class="mb-2">
+                            <span class="font-semibold text-white">Fecha:</span>
+                            <span class="font-semibold text-white">{{ carrera.fecha_inicio|date:"d M Y H:i" }}</span>
+                            <span class="ml-2 px-2 py-1 rounded bg-[#e10600] text-white text-xs font-bold uppercase">{{ carrera.estado|capfirst }}</span>
+                        </p>
+                        {% if carrera.descripcion %}
+                        <p class="mt-3 text-sm text-gray-300">
+                            {{ carrera.descripcion }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-400">No hay carreras finalizadas.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Footer -->
-    <footer class="mt-16 bg-gray-800 text-center py-4 text-sm text-gray-400">
+    <footer class="mt-16 bg-[#1a1a22] text-center py-6 text-sm text-gray-400 border-t border-[#e10600]">
         © 2025 F1 Web
     </footer>
 

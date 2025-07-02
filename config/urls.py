@@ -22,4 +22,5 @@ from core import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', views.index, name='index'),
+    path('carreras/', views.carreras_view, name='carreras'),
 ]

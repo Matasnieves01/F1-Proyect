@@ -22,12 +22,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config("SECRET_KEY", default="clave_insegura")
-DEBUG = config("DEBUG", default=True, cast=bool)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', '0.0.0.0']
 
 
 # Application definition
@@ -39,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',  # Añadido para soporte de WebSockets
+    "uvicorn",  # Añadido para soporte de ASGI
 ]
 
 MIDDLEWARE = [
@@ -56,7 +57,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [str(BASE_DIR / 'interfaces' / 'web' / 'templates')],  # ahora buscará templates en /templates
+        'DIRS': [str(BASE_DIR / 'interfaces' / 'web' / 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -70,7 +71,7 @@ TEMPLATES = [
 ]
 
 
-WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = 'config.asgi.application'  # Añadido para soporte de WebSockets
 
 
 # Database
