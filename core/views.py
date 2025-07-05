@@ -3,6 +3,8 @@ from django.shortcuts import render
 from datetime import datetime, timezone
 from use_cases.race_service import categorize_races
 from django.template.loader import get_template
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
 
 def index(request):
     actuales, futuras, pasadas = categorize_races()
@@ -11,6 +13,17 @@ def index(request):
         'futuras': futuras,
         'pasadas': pasadas
     })
+
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')  # This comes from Django's auth URLs
+    else:
+        form = UserCreationForm()
+    return render(request, 'registrarse/register.html', {'form': form})
 
 
 # Create your views here.
