@@ -72,7 +72,8 @@ TEMPLATES = [
         },
     },
 ]
-
+LOGIN_REDIRECT_URL = '/home/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 ASGI_APPLICATION = 'config.asgi.application'  # Añadido para soporte de WebSockets
 
