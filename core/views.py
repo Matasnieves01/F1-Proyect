@@ -23,7 +23,7 @@ def register(request):
             return redirect('login')  # This comes from Django's auth URLs
     else:
         form = UserCreationForm()
-    return render(request, 'registrarse/register.html', {'form': form})
+    return render(request, 'registration/register.html', {'form': form})
 
 
 # Create your views here.
