@@ -28,16 +28,16 @@
                 <span class="text-[#e10600]">F1</span> Web
             </h1>
             <nav class="space-x-8 text-lg font-semibold">
-                <a href="#" class="hover:text-[#e10600] transition">Inicio</a>
+                <a href="{% url 'index' %}" class="hover:text-[#e10600] transition">Inicio</a>
                 <a href="#" class="hover:text-[#e10600] transition">Carreras</a>
                 <a href="#" class="hover:text-[#e10600] transition">Blog</a>
                 <a href="{% url 'register' %}" class="bg-[#e10600] px-4 py-2 rounded hover:bg-white hover:text-[#e10600] transition">Registrarse</a>
-                <a href="{% url 'register' %}" class="bg-[#e10600] px-4 py-2 rounded hover:bg-white hover:text-[#e10600] transition">Iniciar Sesión</a>
+                <a href="{% url 'login' %}" class="bg-[#e10600] px-4 py-2 rounded hover:bg-white hover:text-[#e10600] transition">Iniciar Sesión</a>
             </nav>
         </div>
     </header>
 
-  <main>
+  <main class="max-w-5xl mx-auto px-4 mt-12">
     {% block content %}
     <!-- Page-specific content goes here -->
     {% endblock %}

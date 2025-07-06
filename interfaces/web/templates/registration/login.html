@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-2xl font-semibold mb-6 text-center">Login</h2>
+<form method="post" class="space-y-4">
+  {% csrf_token %}
+
+  <div>
+    <label for="{{ form.username.id_for_label }}" class="block mb-1 font-medium">Nombre de usuario</label>
+    {{ form.username }}
+    {% for error in form.username.errors %}
+      <p class="text-sm text-red-600">{{ error }}</p>
+    {% endfor %}
+  </div>
+
+  <div>
+    <label for="{{ form.password.id_for_label }}" class="block mb-1 font-medium">Contraseña</label>
+    {{ form.password }}
+    {% for error in form.password.errors %}
+      <p class="text-sm text-red-600">{{ error }}</p>
+    {% endfor %}
+  </div>
+
+  <button type="submit" class="w-full bg-[#e10600] text-white py-2 rounded hover:bg-[#c10500]">
+    Login
+  </button>
+</form>
+
+<p class="text-center text-sm mt-4">
+  Don’t have an account?
+  <a href="{% url 'register' %}" class="text-blue-500 hover:underline">Register</a>
+</p>
+{% endblock %}
