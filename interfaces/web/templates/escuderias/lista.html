@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Escuderías de F1</title>
+</head>
+<body>
+    <h1>Lista de Escuderías</h1>
+    <ul>
+        {% for escuderia in escuderias %}
+            <li>
+                <h2>{{ escuderia.nombre }}</h2>
+                <p>País: {{ escuderia.pais }}</p>
+                <p>Campeonatos: {{ escuderia.campeonatos }}</p>
+                <img src="{{ escuderia.logo }}" alt="Logo {{ escuderia.nombre }}" width="100">
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

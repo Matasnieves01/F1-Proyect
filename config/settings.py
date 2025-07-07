@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',  # Añadido para soporte de WebSockets
-    "uvicorn",  # Añadido para soporte de ASGI
+    "uvicorn", # Añadido para soporte de ASGI
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -58,6 +59,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [str(BASE_DIR / 'interfaces' / 'web' / 'templates')],
+        #'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',

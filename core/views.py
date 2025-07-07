@@ -3,6 +3,7 @@ from django.shortcuts import render
 from datetime import datetime, timezone
 from use_cases.race_service import categorize_races
 from django.template.loader import get_template
+from .models import Escuderia
 
 def index(request):
     actuales, futuras, pasadas = categorize_races()
@@ -70,3 +71,10 @@ def test_template(request):
         'pasadas': [],
     }
     return render(request, 'index.html', context)
+
+def pilotos(request):
+    return render(request, 'pilots.html')
+
+def lista_escuderias(request):
+    escuderias = Escuderia.objects.all()
+    return render(request, 'escuderias/lista.html', {'escuderias': escuderias})
