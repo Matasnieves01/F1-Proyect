@@ -31,7 +31,9 @@
                 <a href="#" class="hover:text-[#e10600] transition">Inicio</a>
                 <a href="#" class="hover:text-[#e10600] transition">Carreras</a>
                 <a href="#" class="hover:text-[#e10600] transition">Blog</a>
-                <a href="#" class="bg-[#e10600] px-4 py-2 rounded hover:bg-white hover:text-[#e10600] transition">Iniciar Sesión</a>
+                <a href="{% url 'pilotos' %}" class="hover:text-[#e10600] transition">Pilotos</a>
+                <a href="{% url 'lista_escuderias' %}" class="hover:text-[#e10600] transition">Escuderías</a>
+                <a href="#" class="bg-[#e10600] px-4 py-2 rounded hover:bg-white hover:text-[#e10600] transition"> Iniciar Sesión</a>
             </nav>
         </div>
     </header>
@@ -39,7 +41,7 @@
     <!-- Main Content -->
     <main class="max-w-5xl mx-auto px-4 mt-12">
         <section class="mb-12">
-            <h2 class="text-3xl font-bold border-b-4 border-[#e10600] pb-2 mb-4">Bienvenido a F1 Web</h2>
+            <h2 class="text-3xl font-bold border-b-4 border-[#e10600] pb-2 mb-4">Bienvenidos a F1 Web</h2>
             <p class="text-gray-300 text-lg">Últimas Noticias de Las Carreras.</p>
         </section>
         <!-- Calendario de Carreras -->
