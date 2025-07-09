@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',  # Añadido para soporte de WebSockets
-    "uvicorn",  # Añadido para soporte de ASGI
+    'uvicorn',  # Añadido para soporte de ASGI
+    'f1_drivers',    # App corredores
 ]
 
 MIDDLEWARE = [
