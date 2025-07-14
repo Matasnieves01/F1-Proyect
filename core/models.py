@@ -11,3 +11,11 @@ class Escuderia(models.Model):
 
     def __str__(self):
         return self.nombre
+    
+class ChatMessage(models.Model):
+    user = models.CharField(max_length=255)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"[{self.timestamp}] {self.user}: {self.content}"
