@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+  
+
+{% block content %}
+<h1>Season {{ year }}</h1>
+
+{% if error %}
+  <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<table border="1" cellpadding="5">
+  <tr>
+    <th>Round</th>
+    <th>Event</th>
+    <th>Winner</th>
+    <th>Pole Position</th>
+  </tr>
+  {% for race in races %}
+    <tr>
+      <td>{{ race.round }}</td>
+      <td>{{ race.event }}</td>
+      <td>{{ race.winner }}</td>
+      <td>{{ race.pole }}</td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock %}

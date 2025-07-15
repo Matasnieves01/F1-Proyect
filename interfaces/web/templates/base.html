@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>F1 Web - Carreras</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Arial Black', Arial, sans-serif;
+            letter-spacing: 0.02em;
+        }
+        .f1-gradient {
+            background: linear-gradient(90deg, #e10600 0%, #15151e 100%);
+        }
+        .f1-border {
+            border-top: 4px solid #e10600;
+        }
+    </style>
+</head>
+<body class="bg-[#15151e] text-white min-h-screen">
+    <header class="f1-gradient py-5 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-4xl font-extrabold tracking-widest text-white drop-shadow-lg">
+                <span class="text-[#e10600]">F1</span> Web
+            </h1>
+            <nav class="space-x-8 text-lg font-semibold">
+                <a href="{% url 'index' %}" class="hover:text-[#e10600] transition">Inicio</a>
+                <a href="{% url 'carreras' %}" class="hover:text-[#e10600] transition">Carreras</a>
+                <a href="#" class="hover:text-[#e10600] transition">Blog</a>
+                {% if user.is_authenticated %}
+                <span>{{ user.username }}!</span>
+                <a href="{% url 'logout' %}" class="btn">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn">Login</a>
+                <a href="{% url 'register' %}" class="btn">Register</a>
+                {% endif %}
+                </nav>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 mt-12">
+        {% block content %}
+        <!-- Page-specific content goes here -->
+        {% endblock %}
+    </main>
+    <footer class="mt-16 bg-[#1a1a22] text-center py-6 text-sm text-gray-400 border-t border-[#e10600]">
+        © 2025 F1 Web
+    </footer>
+</body>
+</html>

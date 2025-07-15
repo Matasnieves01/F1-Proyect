@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+  
+
+{% block content %}
+<h1>Select a Season</h1>
+<ul>
+  {% for s in seasons %}
+    <li><a href="{% url 'race-list' s %}">{{ s }}</a></li>
+  {% endfor %}
+</ul>
+{% endblock %}
