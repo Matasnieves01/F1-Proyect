@@ -3,7 +3,7 @@
   
 
 {% block content %}
-<h1>Season {{ year }}</h1>
+<h1>TEMPORADA {{ year }}</h1>
 
 {% if error %}
   <p style="color: red;">{{ error }}</p>
@@ -11,10 +11,10 @@
 
 <table border="1" cellpadding="5">
   <tr>
-    <th>Round</th>
-    <th>Event</th>
-    <th>Winner</th>
-    <th>Pole Position</th>
+    <th>Ronda</th>
+    <th>Evento</th>
+    <th>Ganador</th>
+    <th>Primera posicion</th>
   </tr>
   {% for race in races %}
     <tr>
