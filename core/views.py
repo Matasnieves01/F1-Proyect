@@ -52,7 +52,7 @@ def logout_view(request):
 
 def season_list(request):
     current_year = datetime.now().year
-    seasons = list(range(2003, current_year + 1))
+    seasons = list(range(2018, current_year + 1))
     return render(request, 'season_list.html', {'seasons': seasons})
 
 
