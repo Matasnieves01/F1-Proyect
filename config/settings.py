@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     'core',         # App principal
     'f1_teams',     # App escuderías
 ]
-  
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
