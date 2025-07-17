@@ -43,7 +43,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('index')
+            return redirect('carreras')
     else:
         form = RegisterForm()
     return render(request, 'register.html', {'form': form})
@@ -54,7 +54,7 @@ def login_view(request):
         form = LoginForm(data=request.POST)
         if form.is_valid():
             login(request, form.get_user())
-            return redirect('index')
+            return redirect('carreras')
     else:
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
