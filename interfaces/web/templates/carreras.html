@@ -153,9 +153,21 @@
         </div>
     </div>
 
+    <!-- Chat -->
+    <div id="chat-container" class="fixed bottom-4 right-4 w-80 bg-gray-800 rounded-lg shadow-xl">
+        <div class="p-4 border-b border-red-600">
+            <h3 class="font-bold text-red-500">Live Chat</h3>
+        </div>
+        <div id="chat-messages" class="p-4 h-64 overflow-y-auto"></div>
+        <div class="p-4 border-t border-gray-700">
+            <input id="chat-input" type="text" placeholder="Type a message..." 
+                   class="w-full bg-gray-700 text-white px-3 py-2 rounded">
+        </div>
+    </div>
+
     <script>
         function openModal(title, location, date, description, winner, winnerImage) {
-            console.log('Opening modal with:', { title, location, date, description, winner, winnerImage }); // Debug log
+            console.log('Opening modal with:', { title, location, date, description, winner, winnerImage });
             const modal = document.getElementById('raceModal');
             const modalContent = modal.querySelector('.transform');
             document.getElementById('modalTitle').textContent = title || 'Unknown Race';
@@ -176,7 +188,7 @@
             setTimeout(() => {
                 modalContent.classList.remove('scale-95', 'opacity-0');
                 modalContent.classList.add('scale-100', 'opacity-100');
-            }, 10); // Slight delay for smooth animation
+            }, 10);
         }
 
         function closeModal() {
@@ -186,76 +198,74 @@
             modalContent.classList.add('scale-95', 'opacity-0');
             setTimeout(() => {
                 modal.classList.add('hidden');
-            }, 300); // Match transition duration
+            }, 300);
         }
 
         document.getElementById('seasonSelect').addEventListener('change', function() {
             window.location.href = '/carreras/?season=' + this.value;
         });
 
-        // Ensure all cards have click event listeners
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', function() {
-                const title = this.getAttribute('onclick').match(/'([^']*)'/g)[0].replace(/'/g, '');
-                const location = this.getAttribute('onclick').match(/'([^']*)'/g)[1].replace(/'/g, '');
-                const date = this.getAttribute('onclick').match(/'([^']*)'/g)[2].replace(/'/g, '');
-                const description = this.getAttribute('onclick').match(/'([^']*)'/g)[3].replace(/'/g, '');
-                const winner = this.getAttribute('onclick').match(/'([^']*)'/g)[4].replace(/'/g, '');
-                const winnerImage = this.getAttribute('onclick').match(/'([^']*)'/g)[5].replace(/'/g, '');
-                openModal(title, location, date, description, winner, winnerImage);
+                const onclick = this.getAttribute('onclick');
+                const matches = onclick.match(/'([^']*)'/g);
+                if (matches) {
+                    const [title, location, date, description, winner, winnerImage] = matches.map(m => m.replace(/'/g, ''));
+                    openModal(title, location, date, description, winner, winnerImage);
+                }
             });
         });
+
+        // WebSocket para el chat
+        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const host = window.location.host;
+        const chatSocket = new WebSocket(`${protocol}${host}/ws/chat/`);
+
+        chatSocket.onopen = function(e) {
+            console.log("WebSocket connected");
+        };
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const messages = document.getElementById('chat-messages');
+            messages.innerHTML += `
+                <div class="mb-2">
+                    <span class="text-red-500 font-bold">${data.user}</span>
+                    <span class="text-gray-400 text-xs">${data.timestamp || 'N/A'}</span>
+                    <p class="text-white">${data.message}</p>
+                </div>
+            `;
+            messages.scrollTop = messages.scrollHeight;
+        };
+
+        chatSocket.onerror = function(e) {
+            console.error("WebSocket error", e);
+        };
+
+        chatSocket.onclose = function(e) {
+            console.log("WebSocket closed", e.code, e.reason);
+        };
+
+        document.getElementById('chat-input').onkeyup = function(e) {
+            if (e.key === 'Enter') {
+                const message = this.value.trim();
+                if (message) {
+                    chatSocket.send(JSON.stringify({
+                        'message': message
+                    }));
+                    this.value = '';
+                }
+            }
+        };
     </script>
+
+    <style>
+        #raceModal:not(.hidden) .transform {
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+        body {
+            font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+        }
+    </style>
 </main>
-
-<style>
-    /* Ensure modal animation works smoothly */
-    #raceModal:not(.hidden) .transform {
-        transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-    }
-    /* Fallback font stack for better compatibility */
-    body {
-        font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
-    }
-</style>
-
-   <!-- chat -->
-    <div id="chat-container" class="fixed bottom-4 right-4 w-80 bg-gray-800 rounded-lg shadow-xl">
-    <div class="p-4 border-b border-red-600">
-        <h3 class="font-bold text-red-500">Live Chat</h3>
-    </div>
-    <div id="chat-messages" class="p-4 h-64 overflow-y-auto"></div>
-    <div class="p-4 border-t border-gray-700">
-        <input id="chat-input" type="text" placeholder="Type a message..." 
-               class="w-full bg-gray-700 text-white px-3 py-2 rounded">
-    </div>
-</div>
-
-<script>
-const chatSocket = new WebSocket(
-    'ws://' + window.location.host + '/ws/live-chat/'
-);
-
-chatSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    const messages = document.getElementById('chat-messages');
-    messages.innerHTML += `
-        <div class="mb-2">
-            <span class="text-red-500 font-bold">${data.user}</span>
-            <span class="text-gray-400 text-xs">${data.timestamp}</span>
-            <p class="text-white">${data.message}</p>
-        </div>
-    `;
-    messages.scrollTop = messages.scrollHeight;
-};
-
-document.getElementById('chat-input').onkeyup = function(e) {
-    if (e.key === 'Enter') {
-        chatSocket.send(JSON.stringify({
-            'message': this.value
-        }));
-        this.value = '';
-    }
-};
-</script>
 {% endblock %}
