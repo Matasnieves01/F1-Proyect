@@ -4,12 +4,35 @@
     <meta charset="UTF-8">
     <title>F1 Web - Carreras</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- TailwindCSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            font-family: 'Segoe UI', 'Arial Black', Arial, sans-serif;
+            font-family: 'Inter', 'Arial Black', 'Helvetica', sans-serif;
             letter-spacing: 0.02em;
+            background-color: #15151e;
+            position: relative;
+            overflow-x: hidden;
+        }
+        /* Subtle checkered flag with reddish gradient background */
+        .f1-background {
+            background: linear-gradient(135deg, rgba(225, 6, 0, 0.15), rgba(21, 21, 30, 0.8)),
+                        url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Crect width="30" height="30" fill="white"/%3E%3Crect x="30" y="30" width="30" height="30" fill="white"/%3E%3C/svg%3E');
+            background-size: 60px 60px, cover;
+            opacity: 0.05; /* Kept subtle */
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+        /* Subtle carbon fiber texture */
+        .f1-texture {
+            background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            opacity: 0.08; /* Subtle texture */
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            filter: blur(1px); /* Softened effect */
         }
         .f1-gradient {
             background: linear-gradient(90deg, #e10600 0%, #15151e 100%);
@@ -17,36 +40,105 @@
         .f1-border {
             border-top: 4px solid #e10600;
         }
+        /* Enhanced title styling for maximum visibility */
+        .f1-title {
+            font-family: 'Russo One', 'Arial Black', sans-serif;
+            font-size: 4rem; /* Increased font size */
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em; /* Wider spacing for impact */
+            background: linear-gradient(45deg, #ff3333, #ffffff); /* Bolder red-to-white gradient */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(255, 51, 51, 0.8), 0 0 30px rgba(255, 255, 255, 0.6); /* Stronger shadow */
+            position: relative;
+            display: inline-block;
+            padding: 0 12px; /* Increased padding */
+            background-color: rgba(21, 21, 30, 0.7); /* Semi-transparent backdrop for contrast */
+            border-radius: 8px; /* Rounded backdrop */
+            animation: pulse 2.5s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+        /* Navigation hover effects */
+        nav a {
+            position: relative;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        nav a:hover::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #e10600;
+            transform: scaleX(1);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease;
+        }
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #e10600;
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease;
+        }
+        /* Button styling */
+        .btn {
+            background-color: #e10600;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #c20500;
+            transform: translateY(-2px);
+        }
+        footer {
+            background: linear-gradient(180deg, #1a1a22, #15151e);
+            border-top: 2px solid #e10600;
+        }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
 </head>
-<body class="bg-[#15151e] text-white min-h-screen">
-    <header class="f1-gradient py-5 shadow-lg">
+<body class="min-h-screen text-white">
+    <div class="f1-background"></div>
+    <div class="f1-texture"></div>
+    <header class="f1-gradient py-5 shadow-lg relative z-10">
         <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-            <h1 class="text-4xl font-extrabold tracking-widest text-white drop-shadow-lg">
-                <span class="text-[#e10600]">F1</span> Web
+            <h1 class="f1-title">
+                <span>F1</span> Web
             </h1>
             <nav class="space-x-8 text-lg font-semibold">
                 <a href="{% url 'index' %}" class="hover:text-[#e10600] transition">Inicio</a>
                 <a href="{% url 'carreras' %}" class="hover:text-[#e10600] transition">Carreras</a>
                 <a href="#" class="hover:text-[#e10600] transition">Blog</a>
                 {% if user.is_authenticated %}
-                <span>{{ user.username }}!</span>
+                <span class="text-gray-300">{{ user.username }}!</span>
                 <a href="{% url 'logout' %}" class="btn">Logout</a>
                 {% else %}
                 <a href="{% url 'login' %}" class="btn">Login</a>
                 <a href="{% url 'register' %}" class="btn">Register</a>
                 {% endif %}
-                </nav>
             </nav>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-4 mt-12">
+    <main class="max-w-5xl mx-auto px-4 mt-12 relative z-10">
         {% block content %}
-        <!-- Page-specific content goes here -->
         {% endblock %}
     </main>
-    <footer class="mt-16 bg-[#1a1a22] text-center py-6 text-sm text-gray-400 border-t border-[#e10600]">
+    <footer class="mt-16 text-center py-6 text-sm text-gray-400 relative z-10">
         © 2025 F1 Web
     </footer>
 </body>

@@ -17,6 +17,7 @@ RUN pip install --no-cache-dir --upgrade pip && pip install -r requirements.txt
 
 # Copiar el resto del proyecto
 COPY . /app
+COPY .env /app/.env
 
 # Comando por defecto
 CMD [""]
