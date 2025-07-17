@@ -26,7 +26,8 @@ INSTALLED_APPS = [
     'f1_drivers',    # App corredores
     'core',         # App principal
     'f1_teams',     # App escuderías
-  
+]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -62,6 +63,15 @@ ASGI_APPLICATION = 'config.asgi.application'
 
 FASTF1_CACHE_DIR = BASE_DIR / 'storage' / 'fastf1_cache'
 
+FASTF1_CACHE_DIR = BASE_DIR / 'storage' / 'fastf1_cache'  # Directorio para caché de FastF1
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+# Database
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
@@ -94,6 +104,12 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
+
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directorio donde se recopilarán los archivos estáticos
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
