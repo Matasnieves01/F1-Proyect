@@ -29,10 +29,10 @@
             <div class="grid gap-8 md:grid-cols-2">
                 {% for carrera in actuales %}
                 <div class="card bg-gray-800 p-6 rounded-lg shadow-lg transition-transform duration-300">
-                    <h3 class="text-xl font-bold text-red-500 mb-2">{{ carrera.nombre }}</h3>
+                    <h3 class="text-xl font-bold text-red-500 mb-2">{{ carrera.name }}</h3>
                     <p class="text-gray-400 mb-2">{{ carrera.lugar }}</p>
                     <p>
-                        <span class="font-semibold">Start Date:</span> {{ carrera.fecha_inicio }}
+                        <span class="font-semibold">Start Date:</span> {{ carrera.date|date:"d F Y H:i" }}
                     </p>
                     <p class="mt-4 text-sm text-gray-300">{{ carrera.descripcion }}</p>
                 </div>
@@ -48,10 +48,10 @@
             <div class="grid gap-8 md:grid-cols-2">
                 {% for carrera in futuras %}
                 <div class="card bg-gray-800 p-6 rounded-lg shadow-lg transition-transform duration-300">
-                    <h3 class="text-xl font-bold text-red-500 mb-2">{{ carrera.nombre }}</h3>
+                    <h3 class="text-xl font-bold text-red-500 mb-2">{{ carrera.name }}</h3>
                     <p class="text-gray-400 mb-2">{{ carrera.lugar }}</p>
                     <p>
-                        <span class="font-semibold">Start Date:</span> {{ carrera.fecha_inicio }}
+                        <span class="font-semibold">Start Date:</span> {{ carrera.date|date:"d F Y H:i" }}
                     </p>
                     <p class="mt-4 text-sm text-gray-300">{{ carrera.descripcion }}</p>
                 </div>
@@ -67,10 +67,10 @@
             <div class="grid gap-8 md:grid-cols-2">
                 {% for carrera in pasadas %}
                 <div class="card bg-gray-800 p-6 rounded-lg shadow-lg transition-transform duration-300">
-                    <h3 class="text-xl font-bold text-red-500 mb-2">{{ carrera.nombre }}</h3>
+                    <h3 class="text-xl font-bold text-red-500 mb-2">{{ carrera.name }}</h3>
                     <p class="text-gray-400 mb-2">{{ carrera.lugar }}</p>
                     <p>
-                        <span class="font-semibold">Start Date:</span> {{ carrera.fecha_inicio }}
+                        <span class="font-semibold">Start Date:</span> {{ carrera.date|date:"d F Y H:i" }}
                     </p>
                     <p class="mt-4 text-sm text-gray-300">{{ carrera.descripcion }}</p>
                 </div>
@@ -85,4 +85,43 @@
         © 2025 F1 Web
     </footer>
 </body>
+
+    <div id="chat-container" class="fixed bottom-4 right-4 w-80 bg-gray-800 rounded-lg shadow-xl">
+    <div class="p-4 border-b border-red-600">
+        <h3 class="font-bold text-red-500">Live Chat</h3>
+    </div>
+    <div id="chat-messages" class="p-4 h-64 overflow-y-auto"></div>
+    <div class="p-4 border-t border-gray-700">
+        <input id="chat-input" type="text" placeholder="Type a message..." 
+               class="w-full bg-gray-700 text-white px-3 py-2 rounded">
+    </div>
+</div>
+
+<script>
+const chatSocket = new WebSocket(
+    'ws://' + window.location.host + '/ws/live-chat/'
+);
+
+chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    const messages = document.getElementById('chat-messages');
+    messages.innerHTML += `
+        <div class="mb-2">
+            <span class="text-red-500 font-bold">${data.user}</span>
+            <span class="text-gray-400 text-xs">${data.timestamp}</span>
+            <p class="text-white">${data.message}</p>
+        </div>
+    `;
+    messages.scrollTop = messages.scrollHeight;
+};
+
+document.getElementById('chat-input').onkeyup = function(e) {
+    if (e.key === 'Enter') {
+        chatSocket.send(JSON.stringify({
+            'message': this.value
+        }));
+        this.value = '';
+    }
+};
+</script>
 </html>

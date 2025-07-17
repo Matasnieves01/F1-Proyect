@@ -54,7 +54,7 @@ def carreras_view(request):
         'futuras': futuras,
         'pasadas': pasadas,
     }
-    return render(request, 'carreras.html', {'carreras': context})
+    return render(request, 'carreras.html', context)
 
 def test_template(request):
     context = {
