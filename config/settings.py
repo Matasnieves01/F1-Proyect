@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 from decouple import config
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -77,6 +78,9 @@ TEMPLATES = [
 
 
 ASGI_APPLICATION = 'config.asgi.application'  # Añadido para soporte de WebSockets
+
+# Configuración FastF1
+FASTF1_CACHE_DIR = BASE_DIR / 'storage' / 'fastf1_cache'  # Usa Path de pathlib
 
 CHANNEL_LAYERS = {
     "default": {
