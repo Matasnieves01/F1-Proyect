@@ -2,25 +2,212 @@
 {% load static %}
 
 {% block content %}
-<main class="max-w-7xl mx-auto px-6 py-16 font-sans bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
+<div class="flex flex-col lg:flex-row gap-8 px-6 py-12 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
     <!-- Checkered flag background -->
     <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect width=\'20\' height=\'20\' fill=\'white\'/%3E%3Crect x=\'20\' y=\'20\' width=\'20\' height=\'20\' fill=\'white\'/%3E%3C/svg%3E'); background-size: 40px 40px;"></div>
     <!-- Carbon fiber texture -->
     <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');"></div>
 
-    <h1 class="text-4xl font-extrabold text-white border-b-4 border-red-700 pb-4 mb-10 tracking-tight text-center">Escuderías de Fórmula 1</h1>
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
-        {% for escuderia in escuderias %}
-        <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center hover:shadow-lg transition-shadow duration-300">
-            <img src="{{ escuderia.logo|default:'https://via.placeholder.com/150x150?text=No+Logo' }}" alt="{{ escuderia.nombre }}" class="w-24 h-24 object-contain mb-4">
-            <h2 class="text-xl font-bold text-red-700">{{ escuderia.nombre }}</h2>
-            <p class="text-gray-700 text-sm"><span class="font-semibold">País:</span> {{ escuderia.pais }}</p>
-            <p class="text-gray-700 text-sm"><span class="font-semibold">Año de Fundación:</span> {{ escuderia.año_fundación }}</p>
-            <p class="text-gray-700 text-sm"><span class="font-semibold">Campeonatos:</span> {{ escuderia.campeonatos }}</p>
-        </div>
-        {% empty %}
-        <p class="text-gray-400 text-center col-span-3">No hay escuderías registradas.</p>
-        {% endfor %}
-    </section>
-</main>
+    <!-- Main content (Teams Grid) -->
+    <main class="flex-1 max-w-5xl font-sans relative z-10">
+        <h1 class="text-4xl font-extrabold text-white border-b-4 border-red-700 pb-4 mb-8 tracking-tight text-center">Escuderías de Fórmula 1 2025</h1>
+        <section id="escuderias" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Team cards inserted by JS -->
+        </section>
+    </main>
+
+    <!-- Standings Sidebar -->
+    <aside class="w-full lg:w-80 bg-gradient-to-br from-[#e10600] via-[#15151e] to-black rounded-2xl shadow-2xl p-4 mt-8 lg:mt-12 relative z-20 border-4 border-[#e10600]">
+        <h2 class="text-2xl font-extrabold text-white mb-4 text-center tracking-wider uppercase drop-shadow-lg">Constructors' Standings 2025</h2>
+        <ul id="standings-list" class="space-y-3">
+            <li class="text-center text-gray-300">Loading...</li>
+        </ul>
+    </aside>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="fixed inset-0 bg-black bg-opacity-80 hidden justify-center items-center z-[9999]">
+    <div class="bg-gray-800 w-full max-w-3xl rounded-xl p-6 relative overflow-y-auto max-h-[90vh] border border-red-700 shadow-2xl">
+        <button onclick="cerrarModal()" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 text-2xl font-bold">×</button>
+        <div id="modal-content"></div>
+    </div>
+</div>
+
+<script>
+    // Teams Data
+    const escuderias = [
+        {
+            nombre: "Ferrari",
+            pais: "Italia",
+            año_fundacion: 1950,
+            campeonatos: 16,
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-ferrari-f1-2021.png.webp?itok=MPcuHAYj",
+            descripcion: "Scuderia Ferrari, fundada en 1929 y compitiendo desde 1950, es el equipo más icónico y exitoso de la Fórmula 1, con 16 campeonatos de constructores y 15 de pilotos. Con sede en Maranello, Italia, Ferrari es sinónimo de pasión, innovación y tradición. En 2025, con pilotos como Lewis Hamilton y Charles Leclerc, busca recuperar el título que no gana desde 2008, apoyada por su legado y una base de fans global."
+        },
+        {
+            nombre: "Red Bull",
+            pais: "Austria",
+            año_fundacion: 2005,
+            campeonatos: 6,
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logos-redbull-f1-2021.png.webp?itok=mB8AzFZz",
+            descripcion: "Red Bull Racing, con sede en Milton Keynes, entró en la F1 en 2005 tras adquirir Jaguar. Con 6 campeonatos de constructores (2010-2013, 2022-2023), el equipo ha dominado gracias a su diseño innovador bajo Adrian Newey y pilotos como Max Verstappen. En 2025, con Verstappen y Yuki Tsunoda, Red Bull sigue siendo favorito, destacando por su agresiva estrategia y apoyo a jóvenes talentos."
+        },
+        {
+            nombre: "McLaren",
+            pais: "Reino Unido",
+            año_fundacion: 1966,
+            campeonatos: 8,
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-mclaren-f1-2021.png.webp?itok=MTryUo4O",
+            descripcion: "McLaren, fundado por Bruce McLaren en 1963, es uno de los equipos más prestigiosos de la F1, con 8 campeonatos de constructores y 12 de pilotos. Con sede en Woking, el equipo resurgió en los últimos años con Lando Norris y Oscar Piastri, destacando en 2025 por su competitividad y diseño aerodinámico, buscando un título que no logra desde 1998."
+        },
+        {
+            nombre: "Mercedes",
+            pais: "Alemania",
+            año_fundacion: 1954,
+            campeonatos: 8,
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-mercedes-f1-2021.png.webp?itok=B1jfZHJF",
+            descripcion: "Mercedes-AMG Petronas, con sede en Brackley, dominó la F1 entre 2014 y 2020 con 7 campeonatos consecutivos, impulsado por su tecnología híbrida y pilotos como Lewis Hamilton. En 2025, con George Russell y Kimi Antonelli, el equipo busca recuperar su posición tras un declive reciente, manteniendo su reputación de ingeniería de precisión."
+        },
+        {
+            nombre: "Aston Martin",
+            pais: "Reino Unido",
+            año_fundacion: 2021,
+            campeonatos: 0,
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-aston-martin-f1-2021.png.webp?itok=6fGHrxEE",
+            descripcion: "Aston Martin Aramco Cognizant, con sede en Silverstone, volvió a la F1 en 2021 tras décadas de ausencia. Con Fernando Alonso y Lance Stroll en 2025, el equipo, respaldado por Lawrence Stroll, invierte fuertemente en infraestructura y talento, buscando podios y su primer título de constructores."
+        },
+        {
+            nombre: "Williams",
+            pais: "Reino Unido",
+            año_fundacion: 1978,
+            campeonatos: 9,
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-williams-f1-2021.png.webp?itok=PpSJbY_B",
+            descripcion: "Williams, fundado en 1977 por Frank Williams, es uno de los equipos históricos de la F1, con 9 campeonatos de constructores (1980-1997). Aunque ha enfrentado dificultades recientes, en 2025, con Carlos Sainz y Alex Albon, el equipo de Grove busca recuperar su gloria pasada con una sólida reestructuración."
+        },
+        {
+            nombre: "Racing Bulls",
+            pais: "Italia",
+            año_fundacion: 2006,
+            campeonatos: 0,
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/2024-01/visa-rb-soymotor.2024.png.webp?itok=DYF_trit",
+            descripcion: "Visa Cash App RB, antes Toro Rosso, es el equipo hermano de Red Bull, con sede en Faenza. En 2025, con Liam Lawson y Isack Hadjar, se enfoca en desarrollar jóvenes talentos mientras busca mejores resultados en el mediocampo, apoyado por la tecnología de Red Bull."
+        },
+        {
+            nombre: "Alpine",
+            pais: "Francia",
+            año_fundacion: 2021,
+            campeonatos: 0,
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-alpine-f1-2021.png.webp?itok=UBYzu9fO",
+            descripcion: "BWT Alpine F1 Team, con sede en Enstone, entró en 2021 tras la reestructuración de Renault. Con Pierre Gasly y Franco Colapinto en 2025, el equipo francés busca consolidarse en el mediocampo, apoyado por su herencia técnica y el respaldo del grupo Renault."
+        },
+        {
+            nombre: "Haas",
+            pais: "Estados Unidos",
+            año_fundacion: 2016,
+            campeonatos: 0,
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-haas-f1-2021.png.webp?itok=D7zg7T2O",
+            descripcion: "Haas F1 Team, el único equipo estadounidense, debutó en 2016 con sede en Kannapolis. En 2025, con Esteban Ocon y Oliver Bearman, el equipo busca mejorar su posición en la parrilla, apoyado por su asociación técnica con Ferrari."
+        },
+        {
+            nombre: "Sauber",
+            pais: "Suiza",
+            año_fundacion: 1993,
+            campeonatos: 0,
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/2024-01/stake-logo-2024.jpeg.webp?itok=qtF5vsPP",
+            descripcion: "Stake F1 Team Sauber, con sede en Hinwil, compite desde 1993 y será Audi en 2026. En 2025, with Nico Hulkenberg and Gabriel Bortoleto, the team is transitioning toward its new era, aiming to improve performance with Audi’s backing."
+        }
+    ];
+
+    // Function to generate team cards
+    function escuderiaTarjeta(escuderia, index) {
+        return `
+            <div onclick="abrirModal(${index})" class="cursor-pointer bg-[#1a1a1a] rounded-xl overflow-hidden shadow-md hover:shadow-lg hover:border-[#e10600] transition-all duration-300 border-2 border-gray-700">
+                <img src="${escuderia.logo}" alt="${escuderia.nombre}" class="w-full h-48 object-contain bg-white p-4">
+                <div class="p-3 text-center">
+                    <p class="text-base font-bold text-white">${escuderia.nombre}</p>
+                </div>
+            </div>
+        `;
+    }
+
+    // Insert team cards
+    const contenedor = document.getElementById('escuderias');
+    const tarjetasHTML = escuderias.map((escuderia, index) => escuderiaTarjeta(escuderia, index)).join('');
+    contenedor.innerHTML = tarjetasHTML;
+
+    // Modal functions
+    function abrirModal(index) {
+        const escuderia = escuderias[index];
+        const modal = document.getElementById('modal');
+        const modalContent = document.getElementById('modal-content');
+
+        modalContent.innerHTML = `
+            <div class="text-center">
+                <img src="${escuderia.logo}" alt="${escuderia.nombre}" class="mx-auto h-64 object-contain bg-white rounded-lg mb-4 p-4">
+                <h2 class="text-3xl font-bold text-red-700 mb-2">${escuderia.nombre}</h2>
+                <p class="text-gray-200 text-lg mb-2"><strong>País:</strong> ${escuderia.pais}</p>
+                <p class="text-gray-200 text-lg mb-2"><strong>Año de Fundación:</strong> ${escuderia.año_fundacion}</p>
+                <p class="text-gray-200 text-lg mb-2"><strong>Campeonatos:</strong> ${escuderia.campeonatos}</p>
+                <p class="text-gray-300 text-base mt-4">${escuderia.descripcion}</p>
+            </div>
+        `;
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        // Bloquea scroll
+        document.body.classList.add('overflow-hidden');
+    }
+
+    function cerrarModal() {
+        const modal = document.getElementById('modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+
+        // Habilita scroll nuevamente
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    // Fetch Constructors' Standings
+    async function fetchStandings() {
+        const url = 'https://api.jolpi.ca/ergast/f1/2025/constructorStandings';
+        const list = document.getElementById('standings-list');
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            const standings = data.MRData.StandingsTable.StandingsLists[0].ConstructorStandings;
+
+            list.innerHTML = standings.map(constructor => {
+                const escuderia = escuderias.find(e => e.nombre === constructor.Constructor.name) || {};
+                const teamLogo = escuderia.logo || 'https://via.placeholder.com/32';
+
+                return `
+                    <li class="flex items-center bg-[#1a1a1a] rounded-xl p-2 shadow-lg border-l-4 border-[#e10600] hover:scale-105 transition-transform duration-200">
+                        <span class="text-xl font-black text-[#e10600] w-6 text-center mr-2">${constructor.position}</span>
+                        <img src="${teamLogo}" alt="${constructor.Constructor.name}" class="w-8 h-8 object-contain rounded-full mr-2 border-2 border-gray-700 bg-white p-1">
+                        <img src="https://flagsapi.com/${getCountryCode(constructor.Constructor.nationality)}/flat/32.png" alt="${constructor.Constructor.nationality}" class="w-6 h-6 rounded-full mr-2 border-2 border-gray-700">
+                        <div class="flex-1">
+                            <span class="font-bold text-white text-sm">${constructor.Constructor.name}</span>
+                        </div>
+                        <span class="text-base font-bold text-white bg-[#e10600] w-12 h-12 flex items-center justify-center rounded-full shadow">${constructor.points}</span>
+                    </li>
+                `;
+            }).join('');
+        } catch (e) {
+            list.innerHTML = `<li class="text-red-400 text-center">Failed to load standings.</li>`;
+        }
+    }
+
+    // Helper to map nationality to country code
+    function getCountryCode(nationality) {
+        const map = {
+            'Italian': 'IT', 'Austrian': 'AT', 'British': 'GB', 'German': 'DE',
+            'American': 'US', 'French': 'FR', 'Swiss': 'CH'
+        };
+        return map[nationality] || 'US';
+    }
+
+    // Initialize standings
+    fetchStandings();
+</script>
 {% endblock %}
