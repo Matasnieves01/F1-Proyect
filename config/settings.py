@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 from decouple import config
+from dotenv import load_dotenv
+
+# Cargar variables de entorno desde un archivo .env
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,6 +46,7 @@ INSTALLED_APPS = [
     'uvicorn',  # Añadido para soporte de ASGI
     'f1_drivers',    # App corredores
     'core',         # App principal
+    'f1_teams',     # App escuderías
 ]
 
 MIDDLEWARE = [

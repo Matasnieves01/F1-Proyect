@@ -36,16 +36,6 @@ DRIVER_IMAGES = {
     'Franco Colapinto': 'drivers/franco_colapinto.jpg',
     'Kimi Antonelli': 'drivers/kimi_antonelli.jpg',
 }
-def index(request):
-    actuales, futuras, pasadas = categorize_races()
-    return render(request, 'index.html', {
-        'actuales': actuales,
-        'futuras': futuras,
-        'pasadas': pasadas
-    })
-
-
-
 
 def register_view(request):
     if request.method == 'POST':
@@ -278,3 +268,134 @@ def pilotos(request):
 def lista_escuderias(request):
     escuderias = Escuderia.objects.all()
     return render(request, 'escuderias/lista.html', {'escuderias': escuderias})
+
+def lista_escuderias(request):
+    escuderias = [
+        {
+            "nombre": "Ferrari",
+            "pais": "Italia",
+            "año_fundación": 1929,
+            "campeonatos": 16,
+            "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwZEFdF2tl48xabmd4uXzDwbGXKjbPUMfVpg&s"
+        },
+        {
+            "nombre": "Mercedes",
+            "pais": "Alemania",
+            "año_fundación": 1954,
+            "campeonatos": 8,
+            "logo": "https://www.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/mercedes.png"
+        },
+        {
+            "nombre": "McLaren",
+            "pais": "Reino Unido",
+            "año_fundación": 1963,
+            "campeonatos": 8,
+            "logo": "https://www.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/mclaren.png"
+        },
+        {
+            "nombre": "Red Bull Racing",
+            "pais": "Austria",
+            "año_fundación": 2005,
+            "campeonatos": 6,
+            "logo": "https://www.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/red%20bull.png"
+        },
+        {
+            "nombre": "Williams",
+            "pais": "Reino Unido",
+            "año_fundación": 1978,
+            "campeonatos": 9,
+            "logo": "https://www.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/williams.png"
+        },
+        {
+            "nombre": "Kick Sauber",
+            "pais": "Suiza",
+            "año_fundación": 1993,
+            "campeonatos": 0,
+            "logo": "https://www.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/kick%20sauber.png"
+        },
+        {
+            "nombre": "Racing Bulls",
+            "pais": "Italia",
+            "año_fundación": 2006,
+            "campeonatos": 0,
+            "logo": "https://brandlogos.net/wp-content/uploads/2025/02/racing_bulls-logo_brandlogos.net_bjuef.png"
+        },
+        {
+            "nombre": "Aston Martin",
+            "pais": "Reino Unido",
+            "año_fundación": 2018,
+            "campeonatos": 0,
+            "logo": "https://www.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/aston%20martin.png"
+        },
+        {
+            "nombre": "Haas",
+            "pais": "Estados Unidos",
+            "año_fundación": 2016,
+            "campeonatos": 0,
+            "logo": "https://www.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/haas.png"
+        },
+        {
+            "nombre": "Alpine",
+            "pais": "Francia",
+            "año_fundación": 1986,
+            "campeonatos": 2,
+            "logo": "https://www.formula1.com/content/dam/fom-website/2018-redesign-assets/team%20logos/alpine.png"
+        },
+    ]
+    return render(request, 'escuderias/lista.html', {'escuderias': escuderias})
+
+
+def blog_view(request):
+    # Obtener la clave API
+    NEWS_API_KEY = os.environ.get('NEWS_API_KEY')
+
+    # Verificar si la clave API está configurada
+    if not NEWS_API_KEY:
+        print("Error: NEWS_API_KEY no está configurada.")
+        return render(request, 'blog.html', {
+            'articles': [],
+            'error': 'La clave de la API de noticias no está configurada.'
+        })
+
+    # Construir la URL de la API con una consulta más específica
+    url = (
+        f'https://newsapi.org/v2/everything?'
+        f'q="Formula 1" OR F1&language=en&sortBy=relevancy&domains=motorsport.com,autosport.com,formula1.com&pageSize=10&apiKey={NEWS_API_KEY}'
+    )
+
+    # Debug: Imprimir la URL (con la clave API ocultada)
+    print(f"Request URL: {url.replace(NEWS_API_KEY, '****')}")
+
+    articles = []
+    error = None
+
+    try:
+        # Hacer la solicitud a la API con un tiempo de espera
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()  # Lanza una excepción para códigos de estado 4xx/5xx
+
+        # Parsear la respuesta JSON
+        data = response.json()
+        articles = data.get('articles', [])
+
+        if not articles:
+            error = 'No se encontraron artículos sobre Fórmula 1.'
+
+        # Debug: Imprimir información de éxito
+        print(f"API Success - Status: {response.status_code}, Artículos encontrados: {len(articles)}")
+
+    except requests.exceptions.HTTPError as http_err:
+        error = f'Error HTTP: {response.status_code} - {response.text}'
+        print(f'HTTP Error: {response.status_code} - {response.text}')
+    except requests.exceptions.RequestException as req_err:
+        error = f'No se pudieron obtener los artículos: {str(req_err)}'
+        print(f'Request Error: {str(req_err)}')
+    except ValueError as json_err:
+        error = 'Error al parsear la respuesta de la API.'
+        print(f'JSON Error: {str(json_err)} - Response: {response.text}')
+
+    # Renderizar la plantilla con los artículos y el error (si lo hay)
+    return render(request, 'blog.html', {
+        'articles': articles,
+        'error': error
+    })
