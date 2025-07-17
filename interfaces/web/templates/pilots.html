@@ -2,252 +2,260 @@
 {% load static %}
 
 {% block content %}
-<main class="max-w-7xl mx-auto px-6 py-16 font-sans bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
+<div class="flex flex-col lg:flex-row gap-8 px-6 py-12 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
     <!-- Checkered flag background -->
     <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect width=\'20\' height=\'20\' fill=\'white\'/%3E%3Crect x=\'20\' y=\'20\' width=\'20\' height=\'20\' fill=\'white\'/%3E%3C/svg%3E'); background-size: 40px 40px;"></div>
     <!-- Carbon fiber texture -->
     <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');"></div>
 
-    <h1 class="text-4xl font-extrabold text-white border-b-4 border-red-700 pb-4 mb-10 tracking-tight text-center">Pilotos de Fórmula 1</h1>
-    <section id="pilotos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
-        <!-- Cards inserted by JS -->
-    </section>
+    <!-- Main content (Pilots Grid) -->
+    <main class="flex-1 max-w-5xl font-sans relative z-10">
+        <h1 class="text-4xl font-extrabold text-white border-b-4 border-red-700 pb-4 mb-8 tracking-tight text-center">Pilotos de Fórmula 1</h1>
+        <section id="pilotos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Cards inserted by JS -->
+        </section>
 
-    <!-- Modal -->
-    <div id="modal" class="fixed inset-0 bg-black bg-opacity-80 hidden justify-center items-center z-50">
-        <div class="bg-gray-800 w-full max-w-3xl rounded-xl p-6 relative overflow-y-auto max-h-[90vh] border border-red-700 shadow-2xl">
-            <button onclick="cerrarModal()" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 text-2xl font-bold">&times;</button>
-            <div id="modal-content"></div>
+        <!-- Modal -->
+
+    </main>
+
+    <!-- Standings Sidebar -->
+    <aside class="w-full lg:w-80 bg-gradient-to-br from-[#e10600] via-[#15151e] to-black rounded-2xl shadow-2xl p-4 mt-8 lg:mt-12 relative z-20 border-4 border-[#e10600]">
+        <h2 class="text-2xl font-extrabold text-white mb-4 text-center tracking-wider uppercase drop-shadow-lg">Standings 2024</h2>
+        <ul id="standings-list" class="space-y-3">
+            <li class="text-center text-gray-300">Loading...</li>
+        </ul>
+    </aside>
+</div>
+<div id="modal" class="fixed inset-0 bg-black bg-opacity-80 hidden justify-center items-center z-[9999]">
+            <div class="bg-gray-800 w-full max-w-3xl rounded-xl p-6 relative overflow-y-auto max-h-[90vh] border border-red-700 shadow-2xl">
+                <button onclick="cerrarModal()" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 text-2xl font-bold">×</button>
+                <div id="modal-content"></div>
+            </div>
         </div>
-    </div>
-</main>
-
 <script>
+    // Pilots Data
     const pilotos = [
         {
-    nombre: "Lewis Hamilton",
-    escuderia: "Ferrari",
-    pais: "Reino Unido",
-    numero: 44,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/lhamilton_2025.png",
-    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwZEFdF2tl48xabmd4uXzDwbGXKjbPUMfVpg&s",
-    descripcion:"Lewis Hamilton, actual piloto de Ferrari en 2025, es considerado uno de los más grandes en la historia de la Fórmula 1, con un palmarés que incluye **8 títulos mundiales** (2008, 2014-2020 y 2024), **más de 115 victorias** y **210 podios**, superando récords de Schumacher. Tras dominar con Mercedes (donde ganó seis campeonatos), sorprendió al fichar por Ferrari en 2025, buscando un último desafío antes de un posible retiro. Además de su éxito en pista, es un icono global por su activismo en diversidad (Mission 44) y sostenibilidad, manteniéndose como figura clave en la F1 a sus 40 años, aunque su futuro depende de su competitividad con el equipo italiano.",
-    titulos: 7,
-},
-{
-    nombre: "Charles Leclerc",
-    escuderia: "Ferrari",
-    pais: "Mónaco",
-    numero: 16,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/cleclerc_2025.png",
-    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwZEFdF2tl48xabmd4uXzDwbGXKjbPUMfVpg&s",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Max Verstappen",
-    escuderia: "Red Bull",
-    pais: "Países Bajos",
-    numero: 1,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/mverstappen_2025.png",
-    logo:"https://w7.pngwing.com/pngs/733/284/png-transparent-red-bull-energy-drink-drawing-logo-red-bull-food-text-carnivoran-thumbnail.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Yuki Tsunoda",
-    escuderia: "RedBull",
-    pais: "Japón",
-    numero: 22,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/yuki-tsunoda-red-bull-2025.png    ",
-    logo:"https://w7.pngwing.com/pngs/733/284/png-transparent-red-bull-energy-drink-drawing-logo-red-bull-food-text-carnivoran-thumbnail.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Lando Norris",
-    escuderia: "McLaren",
-    pais: "Reino Unido",
-    numero: 4,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/lnorris_2025.png",
-    logo:"https://www.vhv.rs/dpng/d/234-2341652_mclaren-logo-png-hq-mclaren-car-logo-png.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Oscar Piastri",
-    escuderia: "McLaren",
-    pais: "Australia",
-    numero: 81,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/opiastri_2025.png",
-    logo:"https://www.vhv.rs/dpng/d/234-2341652_mclaren-logo-png-hq-mclaren-car-logo-png.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "George Russell",
-    escuderia: "Mercedes",
-    pais: "Reino Unido",
-    numero: 63,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/grussell_2025.png",
-    logo:"https://w7.pngwing.com/pngs/366/779/png-transparent-mercedes-benz-logo-car-daimler-ag-mercedes-amg-petronas-f1-team-mercedes-benz-angle-emblem-trademark.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Kimi Antonelli",
-    escuderia: "Mercedes",
-    pais: "Italia",
-    numero: 12,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/kantonelli_2025.png",
-    logo:"https://w7.pngwing.com/pngs/366/779/png-transparent-mercedes-benz-logo-car-daimler-ag-mercedes-amg-petronas-f1-team-mercedes-benz-angle-emblem-trademark.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Fernando Alonso",
-    escuderia: "Aston Martin",
-    pais: "España",
-    numero: 14,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/falonso_2025.png",
-    logo:"https://w7.pngwing.com/pngs/313/756/png-transparent-aston-martin-db9-car-aston-martin-lagonda-logo-diagonal-angle-text-transport.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Lance Stroll",
-    escuderia: "Aston Martin",
-    pais: "Canadá",
-    numero: 18,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/lstroll_2025.png",
-    logo:"https://w7.pngwing.com/pngs/313/756/png-transparent-aston-martin-db9-car-aston-martin-lagonda-logo-diagonal-angle-text-transport.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Carlos Sainz",
-    escuderia: "Williams",
-    pais: "España",
-    numero: 55,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/csainz_2025.png",
-    logo:"https://upload.wikimedia.org/wikipedia/commons/f/f9/Logo_Williams_F1.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Alexander Albon",
-    escuderia: "Williams",
-    pais: "Tailandia",
-    numero: 23,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/aalbon_2025.png",
-    logo:"https://upload.wikimedia.org/wikipedia/commons/f/f9/Logo_Williams_F1.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Liam Lawson",
-    escuderia: "Racing Bulls",
-    pais: "Nueva Zelanda",
-    numero: 30,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/liam-lawson-racing-bulls-2025.png",
-    logo:"https://brandlogos.net/wp-content/uploads/2025/02/racing_bulls-logo_brandlogos.net_bjuef.png",
-    descripcion:"",
-    titulos: 7,
-},
-    {
-    nombre: "Isack Hadjar",
-    escuderia: "Racing Bulls",
-    pais: "Francia",
-    numero: 20,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/ihadjar_2025.png",
-    logo: "https://brandlogos.net/wp-content/uploads/2025/02/racing_bulls-logo_brandlogos.net_bjuef.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Pierre Gasly",
-    escuderia: "Alpine",
-    pais: "Francia",
-    numero: 10,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/pgasly_2025.png",
-    logo:"https://upload.wikimedia.org/wikipedia/fr/thumb/1/1f/Alpine.svg/1200px-Alpine.svg.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Franco Colapinto",
-    escuderia: "Alpine",
-    pais: "Argentina",
-    numero: 43,
-    imagen: "https://soymotor.com/sites/default/files/2025-05/franco-colapinto-2025-soymotor.png",
-    logo:"https://upload.wikimedia.org/wikipedia/fr/thumb/1/1f/Alpine.svg/1200px-Alpine.svg.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Esteban Ocon",
-    escuderia: "Haas",
-    pais: "Francia",
-    numero: 31,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/eocon_2025.png",
-    logo:"https://upload.wikimedia.org/wikipedia/commons/d/d4/Logo_Haas_F1.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Oliver Bearman",
-    escuderia: "Haas",
-    pais: "Reino Unido",
-    numero: 50,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/obearman_2025.png",
-    logo:"https://upload.wikimedia.org/wikipedia/commons/d/d4/Logo_Haas_F1.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Nico Hulkenberg",
-    escuderia: "Audi",
-    pais: "Alemania",
-    numero: 27,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/nhulkenberg_2025.png",
-    logo:"https://w7.pngwing.com/pngs/905/811/png-transparent-audi-q5-car-logo-audi-a3-audi-brand-text-vehicle-map-thumbnail.png",
-    descripcion:"",
-    titulos: 7,
-},
-{
-    nombre: "Gabriel Bortoleto",
-    escuderia: "Audi",
-    pais: "Brasil",
-    numero: 32,
-    imagen: "https://soymotor.com/sites/default/files/2025-03/gbortoleto_2025.png",
-    logo:"https://w7.pngwing.com/pngs/905/811/png-transparent-audi-q5-car-logo-audi-a3-audi-brand-text-vehicle-map-thumbnail.png",
-    descripcion:"",
-    titulos: 7,
-},
-        // Agrega el resto de los pilotos con datos corregidos si es necesario
+            nombre: "Lewis Hamilton",
+            escuderia: "Ferrari",
+            pais: "Reino Unido",
+            numero: 44,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/lhamilton_2025.png",
+            logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn=9GcQwZEFdF2tl48xabmd4uXzDwbGXKjbPUMfVpg&s",
+            descripcion: "Lewis Hamilton, actual piloto de Ferrari en 2025, es considerado uno de los más grandes en la historia de la Fórmula 1, con un palmarés que incluye **8 títulos mundiales** (2008, 2014-2020 y 2024), **más de 115 victorias** y **210 podios**, superando récords de Schumacher. Tras dominar con Mercedes (donde ganó seis campeonatos), sorprendió al fichar por Ferrari en 2025, buscando un último desafío antes de un posible retiro. Además de su éxito en pista, es un icono global por su activismo en diversidad (Mission 44) y sostenibilidad, manteniéndose como figura clave en la F1 a sus 40 años, aunque su futuro depende de su competitividad con el equipo italiano.",
+            titulos: 8
+        },
+        {
+            nombre: "Charles Leclerc",
+            escuderia: "Ferrari",
+            pais: "Mónaco",
+            numero: 16,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/cleclerc_2025.png",
+            logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn=9GcQwZEFdF2tl48xabmd4uXzDwbGXKjbPUMfVpg&s",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "Max Verstappen",
+            escuderia: "Red Bull",
+            pais: "Países Bajos",
+            numero: 1,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/mverstappen_2025.png",
+            logo: "https://w7.pngwing.com/pngs/733/284/png-transparent-red-bull-energy-drink-drawing-logo-red-bull-food-text-carnivoran-thumbnail.png",
+            descripcion: "",
+            titulos: 4
+        },
+        {
+            nombre: "Yuki Tsunoda",
+            escuderia: "Red Bull",
+            pais: "Japón",
+            numero: 22,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/yuki-tsunoda-red-bull-2025.png",
+            logo: "https://w7.pngwing.com/pngs/733/284/png-transparent-red-bull-energy-drink-drawing-logo-red-bull-food-text-carnivoran-thumbnail.png",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "Lando Norris",
+            escuderia: "McLaren",
+            pais: "Reino Unido",
+            numero: 4,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/lnorris_2025.png",
+            logo: "https://www.vhv.rs/dpng/d/234-2341652_mclaren-logo-png-hq-mclaren-car-logo-png.png",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "Oscar Piastri",
+            escuderia: "McLaren",
+            pais: "Australia",
+            numero: 81,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/opiastri_2025.png",
+            logo: "https://www.vhv.rs/dpng/d/234-2341652_mclaren-logo-png-hq-mclaren-car-logo-png.png",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "George Russell",
+            escuderia: "Mercedes",
+            pais: "Reino Unido",
+            numero: 63,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/grussell_2025.png",
+            logo: "https://w7.pngwing.com/pngs/366/779/png-transparent-mercedes-benz-logo-car-daimler-ag-mercedes-amg-petronas-f1-team-mercedes-benz-angle-emblem-trademark.png",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "Kimi Antonelli",
+            escuderia: "Mercedes",
+            pais: "Italia",
+            numero: 12,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/kantonelli_2025.png",
+            logo: "https://w7.pngwing.com/pngs/366/779/png-transparent-mercedes-benz-logo-car-daimler-ag-mercedes-amg-petronas-f1-team-mercedes-benz-angle-emblem-trademark.png",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "Fernando Alonso",
+            escuderia: "Aston Martin",
+            pais: "España",
+            numero: 14,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/falonso_2025.png",
+            logo: "https://w7.pngwing.com/pngs/313/756/png-transparent-aston-martin-db9-car-aston-martin-lagonda-logo-diagonal-angle-text-transport.png",
+            descripcion: "",
+            titulos: 2
+        },
+        {
+            nombre: "Lance Stroll",
+            escuderia: "Aston Martin",
+            pais: "Canadá",
+            numero: 18,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/lstroll_2025.png",
+            logo: "https://w7.pngwing.com/pngs/313/756/png-transparent-aston-martin-db9-car-aston-martin-lagonda-logo-diagonal-angle-text-transport.png",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "Carlos Sainz",
+            escuderia: "Williams",
+            pais: "España",
+            numero: 55,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/csainz_2025.png",
+            logo: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Logo_Williams_F1.png",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "Alexander Albon",
+            escuderia: "Williams",
+            pais: "Tailandia",
+            numero: 23,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/aalbon_2025.png",
+            logo: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Logo_Williams_F1.png",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "Liam Lawson",
+            escuderia: "Racing Bulls",
+            pais: "Nueva Zelanda",
+            numero: 30,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/liam-lawson-racing-bulls-2025.png",
+            logo: "https://brandlogos.net/wp-content/uploads/2025/02/racing_bulls-logo_brandlogos.net_bjuef.png",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "Isack Hadjar",
+            escuderia: "Racing Bulls",
+            pais: "Francia",
+            numero: 20,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/ihadjar_2025.png",
+            logo: "https://brandlogos.net/wp-content/uploads/2025/02/racing_bulls-logo_brandlogos.net_bjuef.png",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "Pierre Gasly",
+            escuderia: "Alpine",
+            pais: "Francia",
+            numero: 10,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/pgasly_2025.png",
+            logo: "https://upload.wikimedia.org/wikipedia/fr/thumb/1/1f/Alpine.svg/1200px-Alpine.svg.png",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "Franco Colapinto",
+            escuderia: "Alpine",
+            pais: "Argentina",
+            numero: 43,
+            imagen: "https://soymotor.com/sites/default/files/2025-05/franco-colapinto-2025-soymotor.png",
+            logo: "https://upload.wikimedia.org/wikipedia/fr/thumb/1/1f/Alpine.svg/1200px-Alpine.svg.png",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "Esteban Ocon",
+            escuderia: "Haas",
+            pais: "Francia",
+            numero: 31,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/eocon_2025.png",
+            logo: "https://upload.wikimedia.org/wikipedia/commons/d/d4/Logo_Haas_F1.png",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "Oliver Bearman",
+            escuderia: "Haas",
+            pais: "Reino Unido",
+            numero: 50,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/obearman_2025.png",
+            logo: "https://upload.wikimedia.org/wikipedia/commons/d/d4/Logo_Haas_F1.png",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "Nico Hulkenberg",
+            escuderia: "Audi",
+            pais: "Alemania",
+            numero: 27,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/nhulkenberg_2025.png",
+            logo: "https://w7.pngwing.com/pngs/905/811/png-transparent-audi-q5-car-logo-audi-a3-audi-brand-text-vehicle-map-thumbnail.png",
+            descripcion: "",
+            titulos: 0
+        },
+        {
+            nombre: "Gabriel Bortoleto",
+            escuderia: "Audi",
+            pais: "Brasil",
+            numero: 32,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/gbortoleto_2025.png",
+            logo: "https://w7.pngwing.com/pngs/905/811/png-transparent-audi-q5-car-logo-audi-a3-audi-brand-text-vehicle-map-thumbnail.png",
+            descripcion: "",
+            titulos: 0
+        }
     ];
 
+    // Function to generate pilot cards (only image and team, more square and smaller)
     function pilotoTarjeta(piloto, index) {
         return `
-            <div onclick="abrirModal(${index})" class="cursor-pointer bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
-                <img src="${piloto.imagen}" alt="${piloto.nombre}" class="w-full h-64 object-cover object-top">
-                <div class="flex justify-between items-start p-4 gap-3">
-                    <div class="flex-1">
-                        <h2 class="text-xl font-bold text-red-700">${piloto.nombre}</h2>
-                        <p class="text-gray-700 text-sm"><span class="font-semibold">Escudería:</span> ${piloto.escuderia}</p>
-                        <p class="text-gray-700 text-sm"><span class="font-semibold">País:</span> ${piloto.pais}</p>
-                        <p class="text-gray-700 text-sm"><span class="font-semibold">Número:</span> ${piloto.numero}</p>
-                    </div>
-                    <img src="${piloto.logo}" alt="Logo ${piloto.escuderia}" class="w-16 h-16 object-contain self-start">
+            <div onclick="abrirModal(${index})" class="cursor-pointer bg-[#1a1a1a] rounded-xl overflow-hidden shadow-md hover:shadow-lg hover:border-[#e10600] transition-all duration-300 border-2 border-gray-700">
+                <img src="${piloto.imagen}" alt="${piloto.nombre}" class="w-full h-48 object-cover object-top">
+                <div class="p-3 text-center">
+                    <p class="text-base font-bold text-white">${piloto.escuderia}</p>
                 </div>
             </div>
         `;
     }
 
+    // Insert pilot cards
     const contenedor = document.getElementById('pilotos');
     const tarjetasHTML = pilotos.map((piloto, index) => pilotoTarjeta(piloto, index)).join('');
     contenedor.innerHTML = tarjetasHTML;
 
+    // Modal functions
     function abrirModal(index) {
         const piloto = pilotos[index];
         const modal = document.getElementById('modal');
@@ -257,22 +265,75 @@
             <div class="text-center">
                 <img src="${piloto.imagen}" alt="${piloto.nombre}" class="mx-auto h-64 object-cover rounded-lg mb-4">
                 <h2 class="text-3xl font-bold text-red-700 mb-2">${piloto.nombre}</h2>
-                <p class="text-gray-800 text-lg mb-2"><strong>Escudería:</strong> ${piloto.escuderia}</p>
-                <p class="text-gray-800 text-lg mb-2"><strong>País:</strong> ${piloto.pais}</p>
-                <p class="text-gray-800 text-lg mb-2"><strong>Número:</strong> ${piloto.numero}</p>
-                <p class="text-gray-800 text-lg mb-2"><strong>Títulos:</strong> ${piloto.titulos}</p>
-                <p class="text-gray-600 text-base mt-4">${piloto.descripcion}</p>
+                <p class="text-gray-200 text-lg mb-2"><strong>Escudería:</strong> ${piloto.escuderia}</p>
+                <p class="text-gray-200 text-lg mb-2"><strong>País:</strong> ${piloto.pais}</p>
+                <p class="text-gray-200 text-lg mb-2"><strong>Número:</strong> ${piloto.numero}</p>
+                <p class="text-gray-200 text-lg mb-2"><strong>Títulos:</strong> ${piloto.titulos}</p>
+                <p class="text-gray-300 text-base mt-4">${piloto.descripcion}</p>
             </div>
         `;
 
         modal.classList.remove('hidden');
         modal.classList.add('flex');
+
+        // 🔒 Bloquea scroll
+        document.body.classList.add('overflow-hidden');
     }
 
     function cerrarModal() {
         const modal = document.getElementById('modal');
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+
+        // ✅ Habilita scroll nuevamente
+        document.body.classList.remove('overflow-hidden');
     }
+
+    // Fetch Standings with Driver Banner (All Drivers)
+    async function fetchStandings() {
+        const url = 'https://api.jolpi.ca/ergast/f1/current/driverStandings';
+        const list = document.getElementById('standings-list');
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            const standings = data.MRData.StandingsTable.StandingsLists[0].DriverStandings; // Full list
+
+            list.innerHTML = standings.map(driver => {
+                // Match driver with pilotos array
+                const fullName = `${driver.Driver.givenName} ${driver.Driver.familyName}`;
+                const piloto = pilotos.find(p => p.nombre === fullName) || {};
+                const driverImage = piloto.imagen || 'https://via.placeholder.com/32';
+
+                return `
+                    <li class="flex items-center bg-[#1a1a1a] rounded-xl p-2 shadow-lg border-l-4 border-[#e10600] hover:scale-105 transition-transform duration-200">
+                        <span class="text-xl font-black text-[#e10600] w-6 text-center mr-2">${driver.position}</span>
+                        <img src="${driverImage}" alt="${fullName}" class="w-8 h-8 object-cover rounded-full mr-2 border-2 border-gray-700">
+                        <img src="https://flagsapi.com/${getCountryCode(driver.Driver.nationality)}/flat/32.png" alt="${driver.Driver.nationality}" class="w-6 h-6 rounded-full mr-2 border-2 border-gray-700">
+                        <div>
+                            <span class="font-bold text-white text-sm">${fullName}</span>
+                            <span class="block text-gray-400 text-xs">${driver.Constructors[0].name}</span>
+                        </div>
+                        <span class="ml-auto text-base font-bold text-white bg-[#e10600] px-2 py-1 rounded-full shadow">${driver.points} pts</span>
+                    </li>
+                `;
+            }).join('');
+        } catch (e) {
+            list.innerHTML = `<li class="text-red-400 text-center">Failed to load standings.</li>`;
+        }
+    }
+
+    // Helper to map nationality to country code
+    function getCountryCode(nationality) {
+        const map = {
+            'British': 'GB', 'Dutch': 'NL', 'Spanish': 'ES', 'French': 'FR', 'German': 'DE',
+            'Australian': 'AU', 'Canadian': 'CA', 'Japanese': 'JP', 'Monegasque': 'MC',
+            'Thai': 'TH', 'New Zealander': 'NZ', 'Argentine': 'AR', 'Brazilian': 'BR',
+            'Italian': 'IT', 'Finnish': 'FI', 'American': 'US'
+        };
+        return map[nationality] || 'US';
+    }
+
+    // Initialize both pilots and standings
+    fetchStandings();
 </script>
 {% endblock %}

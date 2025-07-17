@@ -1,6 +1,10 @@
 import os
 from pathlib import Path
 from decouple import config
+from dotenv import load_dotenv
+
+# Cargar variables de entorno desde un archivo .env
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -17,11 +21,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels',
-    'f1_drivers',
-    'core',
-]
-
+    'channels',  # Añadido para soporte de WebSockets
+    'uvicorn',  # Añadido para soporte de ASGI
+    'f1_drivers',    # App corredores
+    'core',         # App principal
+    'f1_teams',     # App escuderías
+  
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

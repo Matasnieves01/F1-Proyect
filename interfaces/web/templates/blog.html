@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<main class="max-w-7xl mx-auto px-6 py-16 font-sans bg-gradient-to-b from-[#1a1a1a] to-black relative overflow-hidden">
+    <!-- Checkered flag background -->
+    <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect width=\'20\' height=\'20\' fill=\'white\'/%3E%3Crect x=\'20\' y=\'20\' width=\'20\' height=\'20\' fill=\'white\'/%3E%3C/svg%3E'); background-size: 40px 40px;"></div>
+    <!-- Carbon fiber texture -->
+    <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');"></div>
+
+    <h2 class="relative text-5xl font-extrabold text-center text-white mb-12 tracking-wider uppercase bg-gradient-to-r from-[#e10600] to-[#ff4d4d] py-3 px-6 rounded-lg shadow-2xl shadow-red-500/50 font-bebas">
+        Latest Formula 1 News
+    </h2>
+
+    {% if error %}
+        <div class="relative text-red-300 bg-red-950/90 p-5 rounded-lg mb-10 text-center font-medium text-lg border-2 border-red-500 shadow-md shadow-red-500/30">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 relative z-10">
+        {% for article in articles %}
+            <div class="relative bg-[#1a1a1a] rounded-xl overflow-hidden shadow-2xl hover:shadow-red-500/50 hover:scale-105 transition-all duration-300 border-2 border-gray-700 hover:border-[#e10600]">
+                <a href="#" class="block" data-modal-target="newsModal" data-modal-toggle="newsModal"
+                   onclick="openNewsModal('{{ article.title|escapejs }}', '{{ article.description|default:'No description available'|escapejs }}', '{{ article.urlToImage|default:''|escapejs }}', '{{ article.url|escapejs }}', '{{ article.publishedAt|date:'Y-m-d H:i'|escapejs }}')">
+                    {% if article.urlToImage %}
+                        <img src="{{ article.urlToImage }}" alt="{{ article.title }}" class="w-full h-64 object-cover rounded-t-xl transition-opacity duration-300 hover:opacity-85">
+                    {% else %}
+                        <div class="w-full h-64 bg-gray-800 flex items-center justify-center rounded-t-xl">
+                            <span class="text-gray-400 font-medium text-lg">No Image Available</span>
+                        </div>
+                    {% endif %}
+                    <div class="p-6 relative">
+                        <h3 class="text-3xl font-black text-white hover:text-[#e10600] line-clamp-2 mb-4 tracking-tight">
+                            {{ article.title }}
+                        </h3>
+                        <p class="text-gray-400 text-sm font-light mb-3">{{ article.publishedAt|date:"Y-m-d H:i" }}</p>
+                        <p class="text-gray-200 text-lg font-normal line-clamp-3 leading-relaxed">{{ article.description|default:"No description available" }}</p>
+                    </div>
+                </a>
+                <!-- Detalle de bandera a cuadros en la esquina -->
+                <div class="absolute top-0 right-0 w-12 h-12 bg-gradient-to-br from-[#e10600] to-transparent opacity-50" style="clip-path: polygon(100% 0, 0 0, 100% 100%); background-image: url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect width=\'20\' height=\'20\' fill=\'white\'/%3E%3Crect x=\'20\' y=\'20\' width=\'20\' height=\'20\' fill=\'white\'/%3E%3C/svg%3E'); background-size: 10px 10px;"></div>
+            </div>
+        {% endfor %}
+    </div>
+</main>
+
+<!-- Modal -->
+<div id="newsModal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-50 overflow-auto bg-black bg-opacity-80 flex justify-center items-center">
+    <div class="relative p-6 w-full max-w-3xl animate-slide-in">
+        <!-- Modal content -->
+        <div class="relative bg-gray-800/90 rounded-xl shadow-2xl p-8 border-4 border-[#e10600] shadow-red-500/70">
+            <!-- Modal header -->
+            <div class="flex justify-between items-start mb-6 relative z-10">
+                <div>
+                    <h3 id="modalTitle" class="text-4xl font-black text-white mb-3 tracking-tight">
+                        Title
+                    </h3>
+                    <p id="modalDate" class="text-sm text-gray-400 font-light"></p>
+                </div>
+                <button type="button" class="text-gray-300 hover:bg-[#e10600] hover:text-white rounded-lg text-sm p-2 transition-colors z-10" data-modal-toggle="newsModal" onclick="closeNewsModal()">
+                    <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="space-y-6 relative z-10">
+                <img id="modalImage" src="" alt="news image" class="w-full h-80 object-cover rounded-lg hidden border-2 border-gray-700">
+                <p id="modalDescription" class="text-gray-200 text-lg font-normal leading-relaxed"></p>
+                <a id="modalLink" href="#" target="_blank" class="inline-flex items-center text-white bg-[#e10600] hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-semibold rounded-lg text-base px-6 py-3 transition-colors shadow-md shadow-red-500/50">
+                    Read Full Article
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openNewsModal(title, description, imageUrl, articleUrl, date) {
+        // Set modal content
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalDescription').textContent = description || 'No description available';
+        document.getElementById('modalDate').textContent = date;
+        document.getElementById('modalLink').href = articleUrl;
+        const modalImage = document.getElementById('modalImage');
+        if (imageUrl) {
+            modalImage.src = imageUrl;
+            modalImage.classList.remove('hidden');
+        } else {
+            modalImage.classList.add('hidden');
+        }
+        // Show modal and disable body scroll
+        document.getElementById('newsModal').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+    }
+
+    function closeNewsModal() {
+        // Hide modal and restore body scroll
+        document.getElementById('newsModal').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('newsModal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeNewsModal();
+        }
+    });
+</script>
+
+<style>
+    @keyframes slide-in {
+        from { opacity: 0; transform: translateY(40px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .animate-slide-in {
+        animation: slide-in 0.4s ease-out;
+    }
+</style>
+{% endblock %}

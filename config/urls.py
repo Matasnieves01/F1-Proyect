@@ -16,13 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from core.views import pilotos, lista_escuderias, index, carreras_view, register_view, login_view, logout_view, season_list, race_list
+from core.views import pilotos, lista_escuderias, carreras_view, register_view, login_view, logout_view, season_list, race_list, blog_view
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('home/', index, name='index'),
-    path('carreras/', carreras_view, name='carreras'),
+    path('',carreras_view, name='carreras'),
     path('register/', register_view, name='register'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
@@ -30,4 +29,5 @@ urlpatterns = [
     path('<int:year>/', race_list, name='race-list'),
     path('pilotos/', pilotos, name='pilotos'),
     path('escuderias/', lista_escuderias, name='lista_escuderias'),
+    path('blog/', blog_view, name='blog'),
 ]
