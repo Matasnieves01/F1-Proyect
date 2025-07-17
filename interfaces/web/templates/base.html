@@ -123,12 +123,14 @@
                 <a href="{% url 'index' %}" class="hover:text-[#e10600] transition">Inicio</a>
                 <a href="{% url 'carreras' %}" class="hover:text-[#e10600] transition">Carreras</a>
                 <a href="#" class="hover:text-[#e10600] transition">Blog</a>
+                <a href="{% url 'pilotos' %}" class="hover:text-[#e10600] transition">Pilotos</a>
+                <a href="{% url 'lista_escuderias' %}" class="hover:text-[#e10600] transition">Escuderías</a>
                 {% if user.is_authenticated %}
-                <span class="text-gray-300">{{ user.username }}!</span>
-                <a href="{% url 'logout' %}" class="btn">Logout</a>
+                    <span class="text-gray-300">{{ user.username }}!</span>
+                    <a href="{% url 'logout' %}" class="btn">Logout</a>
                 {% else %}
-                <a href="{% url 'login' %}" class="btn">Login</a>
-                <a href="{% url 'register' %}" class="btn">Register</a>
+                    <a href="{% url 'login' %}" class="btn">Login</a>
+                    <a href="{% url 'register' %}" class="btn">Register</a>
                 {% endif %}
             </nav>
         </div>
