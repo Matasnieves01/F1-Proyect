@@ -1,0 +1,358 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="flex flex-col lg:flex-row gap-8 px-6 py-12 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
+    <!-- Checkered flag background -->
+    <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect width=\'20\' height=\'20\' fill=\'white\'/%3E%3Crect x=\'20\' y=\'20\' width=\'20\' height=\'20\' fill=\'white\'/%3E%3C/svg%3E'); background-size: 40px 40px;"></div>
+    <!-- Carbon fiber texture -->
+    <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');"></div>
+
+    <!-- Main content (Pilots Grid) -->
+    <main class="flex-1 max-w-5xl font-sans relative z-10">
+        <h1 class="text-4xl font-extrabold text-white border-b-4 border-red-700 pb-4 mb-8 tracking-tight text-center">Pilotos de Fórmula 1 2025</h1>
+        <section id="pilotos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Cards inserted by JS -->
+        </section>
+    </main>
+
+    <!-- Standings Sidebar -->
+    <aside class="w-full lg:w-80 bg-gradient-to-br from-[#e10600] via-[#15151e] to-black rounded-2xl shadow-2xl p-4 mt-8 lg:mt-12 relative z-20 border-4 border-[#e10600]">
+        <h2 class="text-2xl font-extrabold text-white mb-4 text-center tracking-wider uppercase drop-shadow-lg">Standings 2025</h2>
+        <ul id="standings-list" class="space-y-3">
+            <li class="text-center text-gray-300">Loading...</li>
+        </ul>
+    </aside>
+</div>
+<div id="modal" class="fixed inset-0 bg-black bg-opacity-80 hidden justify-center items-center z-[9999]">
+    <div class="bg-gray-800 w-full max-w-3xl rounded-xl p-6 relative overflow-y-auto max-h-[90vh] border border-red-700 shadow-2xl">
+        <button onclick="cerrarModal()" class="absolute top-4 right-4 text-gray-300 hover:text-red-500 text-2xl font-bold">×</button>
+        <div id="modal-content"></div>
+    </div>
+</div>
+
+<script>
+    // Pilots Data
+    const pilotos = [
+        {
+            nombre: "Lewis Hamilton",
+            escuderia: "Ferrari",
+            pais: "Reino Unido",
+            numero: 44,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/lhamilton_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-ferrari-f1-2021.png.webp?itok=MPcuHAYj",
+            descripcion: "Lewis Hamilton, actual piloto de Ferrari en 2025, es considerado uno de los más grandes en la historia de la Fórmula 1, con un palmarés que incluye **8 títulos mundiales** (2008, 2014-2020 y 2024), **más de 115 victorias** y **210 podios**, superando récords de Schumacher. Tras dominar con Mercedes (donde ganó seis campeonatos), sorprendió al fichar por Ferrari en 2025, buscando un último desafío antes de un posible retiro. Además de su éxito en pista, es un icono global por su activismo en diversidad (Mission 44) y sostenibilidad, manteniéndose como figura clave en la F1 a sus 40 años, aunque su futuro depende de su competitividad con el equipo italiano.",
+            titulos: 8
+        },
+        {
+            nombre: "Charles Leclerc",
+            escuderia: "Ferrari",
+            pais: "Mónaco",
+            numero: 16,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/cleclerc_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-ferrari-f1-2021.png.webp?itok=MPcuHAYj",
+            descripcion: "Charles Leclerc, piloto monegasco de Ferrari, es una de las estrellas emergentes de la Fórmula 1. Conocido por su velocidad y talento, debutó con Sauber en 2018 antes de unirse a Ferrari en 2019. En 2025, junto a Lewis Hamilton, busca llevar a Ferrari al título, apoyado por su consistencia y habilidades en clasificación.",
+            titulos: 0
+        },
+        {
+            nombre: "Max Verstappen",
+            escuderia: "Red Bull",
+            pais: "Países Bajos",
+            numero: 1,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/mverstappen_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logos-redbull-f1-2021.png.webp?itok=mB8AzFZz",
+            descripcion: "Max Verstappen, líder de Red Bull, es el actual dominador de la F1, con cuatro títulos mundiales (2021-2024). Conocido por su agresividad y precisión, ha acumulado numerosas victorias y pole positions. En 2025, busca mantener su hegemonía con Red Bull, enfrentándose a una parrilla competitiva.",
+            titulos: 4
+        },
+        {
+            nombre: "Yuki Tsunoda",
+            escuderia: "Red Bull",
+            pais: "Japón",
+            numero: 22,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/yuki-tsunoda-red-bull-2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logos-redbull-f1-2021.png.webp?itok=mB8AzFZz",
+            descripcion: "Yuki Tsunoda, ascendido a Red Bull en 2025 tras destacar en Racing Bulls, es el primer piloto japonés en la F1 en años. Conocido por su velocidad y carisma, busca consolidarse como compañero de Verstappen, aportando puntos clave al equipo.",
+            titulos: 0
+        },
+        {
+            nombre: "Lando Norris",
+            escuderia: "McLaren",
+            pais: "Reino Unido",
+            numero: 4,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/lnorris_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-mclaren-f1-2021.png.webp?itok=MTryUo4O",
+            descripcion: "Lando Norris, estrella de McLaren, es conocido por su talento y carisma en redes sociales. En 2025, tras varias victorias en 2024, busca su primer título mundial, liderando el resurgimiento de McLaren junto a Oscar Piastri.",
+            titulos: 0
+        },
+        {
+            nombre: "Oscar Piastri",
+            escuderia: "McLaren",
+            pais: "Australia",
+            numero: 81,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/opiastri_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-mclaren-f1-2021.png.webp?itok=MTryUo4O",
+            descripcion: "Oscar Piastri, joven talento australiano de McLaren, impresionó desde su debut en 2023. En 2025, con varias victorias en su haber, se consolida como un pilar del equipo, complementando a Norris en la lucha por el campeonato.",
+            titulos: 0
+        },
+        {
+            nombre: "George Russell",
+            escuderia: "Mercedes",
+            pais: "Reino Unido",
+            numero: 63,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/grussell_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-mercedes-f1-2021.png.webp?itok=B1jfZHJF",
+            descripcion: "George Russell, líder de Mercedes en 2025, es conocido por su consistencia y habilidades en lluvia. Tras años en Williams, se unió a Mercedes en 2022 y ahora, junto a Kimi Antonelli, busca devolver al equipo a la cima.",
+            titulos: 0
+        },
+        {
+            nombre: "Kimi Antonelli",
+            escuderia: "Mercedes",
+            pais: "Italia",
+            numero: 12,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/kantonelli_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-mercedes-f1-2021.png.webp?itok=B1jfZHJF",
+            descripcion: "Kimi Antonelli, joven promesa italiana, debuta en F1 con Mercedes en 2025 tras brillar en categorías inferiores. Considerado un futuro campeón, su ascenso rápido refleja la confianza de Mercedes en su talento.",
+            titulos: 0
+        },
+        {
+            nombre: "Fernando Alonso",
+            escuderia: "Aston Martin",
+            pais: "España",
+            numero: 14,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/falonso_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-aston-martin-f1-2021.png.webp?itok=6fGHrxEE",
+            descripcion: "Fernando Alonso, bicampeón mundial (2005-2006), sigue compitiendo en 2025 con Aston Martin a sus 44 años. Con más de 400 grandes premios, su experiencia y agresividad lo mantienen como un competidor formidable.",
+            titulos: 2
+        },
+        {
+            nombre: "Lance Stroll",
+            escuderia: "Aston Martin",
+            pais: "Canadá",
+            numero: 18,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/lstroll_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-aston-martin-f1-2021.png.webp?itok=6fGHrxEE",
+            descripcion: "Lance Stroll, piloto de Aston Martin, continúa en 2025 bajo el respaldo de su padre, Lawrence Stroll. Aunque ha logrado podios, busca mayor consistencia para apoyar los ambiciosos objetivos del equipo.",
+            titulos: 0
+        },
+        {
+            nombre: "Carlos Sainz",
+            escuderia: "Williams",
+            pais: "España",
+            numero: 55,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/csainz_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-williams-f1-2021.png.webp?itok=PpSJbY_B",
+            descripcion: "Carlos Sainz, tras su paso por Ferrari, se une a Williams en 2025. Con varias victorias en su carrera, su experiencia es clave para el resurgimiento del equipo, junto a Alex Albon.",
+            titulos: 0
+        },
+        {
+            nombre: "Alexander Albon",
+            escuderia: "Williams",
+            pais: "Tailandia",
+            numero: 23,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/aalbon_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-williams-f1-2021.png.webp?itok=PpSJbY_B",
+            descripcion: "Alexander Albon, piloto de Williams, ha demostrado su valía desde su regreso a la F1 en 2022. En 2025, lidera el equipo junto a Sainz, buscando llevar a Williams al mediocampo.",
+            titulos: 0
+        },
+        {
+            nombre: "Liam Lawson",
+            escuderia: "Racing Bulls",
+            pais: "Nueva Zelanda",
+            numero: 30,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/liam-lawson-racing-bulls-2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/2024-01/visa-rb-soymotor.2024.png.webp?itok=DYF_trit",
+            descripcion: "Liam Lawson, ascendido a Racing Bulls en 2025, es una joven promesa del programa de Red Bull. Su velocidad y consistencia lo posicionan como un talento a seguir.",
+            titulos: 0
+        },
+        {
+            nombre: "Isack Hadjar",
+            escuderia: "Racing Bulls",
+            pais: "Francia",
+            numero: 20,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/ihadjar_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/2024-01/visa-rb-soymotor.2024.png.webp?itok=DYF_trit",
+            descripcion: "Isack Hadjar, debutante en Racing Bulls en 2025, llega desde las categorías inferiores de Red Bull. Su objetivo es destacar en el mediocampo y ganar experiencia en F1.",
+            titulos: 0
+        },
+        {
+            nombre: "Pierre Gasly",
+            escuderia: "Alpine",
+            pais: "Francia",
+            numero: 10,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/pgasly_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-alpine-f1-2021.png.webp?itok=UBYzu9fO",
+            descripcion: "Pierre Gasly, piloto de Alpine, es conocido por su victoria en Monza 2020. En 2025, lidera el equipo francés junto a Colapinto, buscando podios para Alpine.",
+            titulos: 0
+        },
+        {
+            nombre: "Franco Colapinto",
+            escuderia: "Alpine",
+            pais: "Argentina",
+            numero: 43,
+            imagen: "https://soymotor.com/sites/default/files/2025-05/franco-colapinto-2025-soymotor.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-alpine-f1-2021.png.webp?itok=UBYzu9fO",
+            descripcion: "Franco Colapinto, debutante argentino en Alpine para 2025, llega tras destacar en categorías inferiores. Su velocidad y carisma lo convierten en una promesa para el equipo.",
+            titulos: 0
+        },
+        {
+            nombre: "Esteban Ocon",
+            escuderia: "Haas",
+            pais: "Francia",
+            numero: 31,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/eocon_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-haas-f1-2021.png.webp?itok=D7zg7T2O",
+            descripcion: "Esteban Ocon, ahora en Haas para 2025, aporta experiencia tras su paso por Alpine. Con una victoria en Hungría 2021, busca mejorar la posición del equipo estadounidense.",
+            titulos: 0
+        },
+        {
+            nombre: "Oliver Bearman",
+            escuderia: "Haas",
+            pais: "Reino Unido",
+            numero: 50,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/obearman_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/imagenes/equipo/logo-haas-f1-2021.png.webp?itok=D7zg7T2O",
+            descripcion: "Oliver Bearman, debutante en Haas para 2025, es una joven promesa de la academia de Ferrari. Su actuación en 2024 como suplente lo llevó a un asiento titular.",
+            titulos: 0
+        },
+        {
+            nombre: "Nico Hulkenberg",
+            escuderia: "Sauber",
+            pais: "Alemania",
+            numero: 27,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/nhulkenberg_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/2024-01/stake-logo-2024.jpeg.webp?itok=qtF5vsPP",
+            descripcion: "Nico Hulkenberg, veterano de Sauber en 2025, aporta experiencia al equipo en transición hacia Audi. Conocido por su consistencia, busca preparar el camino para 2026.",
+            titulos: 0
+        },
+        {
+            nombre: "Gabriel Bortoleto",
+            escuderia: "Sauber",
+            pais: "Brasil",
+            numero: 32,
+            imagen: "https://soymotor.com/sites/default/files/2025-03/gbortoleto_2025.png",
+            logo: "https://soymotor.com/sites/default/files/styles/thumbnail_150x150/public/2024-01/stake-logo-2024.jpeg.webp?itok=qtF5vsPP",
+            descripcion: "Gabriel Bortoleto, debutante brasileño en Sauber para 2025, llega tras brillar en categorías inferiores. Su talento lo posiciona como una apuesta para el futuro de Audi.",
+            titulos: 0
+        }
+    ];
+
+    // Function to generate pilot cards (only image and team, more square and smaller)
+    function pilotoTarjeta(piloto, index) {
+        return `
+            <div onclick="abrirModal(${index})" class="cursor-pointer bg-[#1a1a1a] rounded-xl overflow-hidden shadow-md hover:shadow-lg hover:border-[#e10600] transition-all duration-300 border-2 border-gray-700">
+                <img src="${piloto.imagen}" alt="${piloto.nombre}" class="w-full h-48 object-cover object-top">
+                <div class="p-3 text-center">
+                    <p class="text-base font-bold text-white">${piloto.escuderia}</p>
+                </div>
+            </div>
+        `;
+    }
+
+    // Insert pilot cards
+    const contenedor = document.getElementById('pilotos');
+    if (contenedor) {
+        const tarjetasHTML = pilotos.map((piloto, index) => pilotoTarjeta(piloto, index)).join('');
+        contenedor.innerHTML = tarjetasHTML;
+    } else {
+        console.error("Element with ID 'pilotos' not found.");
+    }
+
+    // Modal functions
+    function abrirModal(index) {
+        const piloto = pilotos[index];
+        const modal = document.getElementById('modal');
+        const modalContent = document.getElementById('modal-content');
+
+        if (modal && modalContent) {
+            modalContent.innerHTML = `
+                <div class="text-center">
+                    <img src="${piloto.imagen}" alt="${piloto.nombre}" class="mx-auto h-64 object-cover rounded-lg mb-4">
+                    <h2 class="text-3xl font-bold text-red-700 mb-2">${piloto.nombre}</h2>
+                    <p class="text-gray-200 text-lg mb-2"><strong>Escudería:</strong> ${piloto.escuderia}</p>
+                    <p class="text-gray-200 text-lg mb-2"><strong>País:</strong> ${piloto.pais}</p>
+                    <p class="text-gray-200 text-lg mb-2"><strong>Número:</strong> ${piloto.numero}</p>
+                    <p class="text-gray-200 text-lg mb-2"><strong>Títulos:</strong> ${piloto.titulos}</p>
+                    <p class="text-gray-300 text-base mt-4">${piloto.descripcion}</p>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.classList.add('overflow-hidden');
+        } else {
+            console.error("Modal or modal-content element not found.");
+        }
+    }
+
+    function cerrarModal() {
+        const modal = document.getElementById('modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.classList.remove('overflow-hidden');
+        } else {
+            console.error("Modal element not found.");
+        }
+    }
+
+    // Fetch Standings with Driver Banner (All Drivers)
+    async function fetchStandings() {
+        const url = 'https://api.jolpi.ca/ergast/f1/2025/driverStandings';
+        const list = document.getElementById('standings-list');
+        if (!list) {
+            console.error("Element with ID 'standings-list' not found.");
+            return;
+        }
+
+        try {
+            const res = await fetch(url);
+            if (!res.ok) {
+                throw new Error(`HTTP error! Status: ${res.status}`);
+            }
+            const data = await res.json();
+            const standings = data.MRData.StandingsTable.StandingsLists[0]?.DriverStandings;
+
+            if (!standings) {
+                list.innerHTML = `<li class="text-red-400 text-center">No standings data available.</li>`;
+                return;
+            }
+
+            list.innerHTML = standings.map(driver => {
+                const fullName = `${driver.Driver.givenName} ${driver.Driver.familyName}`;
+                const piloto = pilotos.find(p => p.nombre === fullName) || {};
+                const driverImage = piloto.imagen || 'https://via.placeholder.com/32';
+
+                return `
+                    <li class="flex items-center bg-[#1a1a1a] rounded-xl p-2 shadow-lg border-l-4 border-[#e10600] hover:scale-105 transition-transform duration-200">
+                        <span class="text-xl font-black text-[#e10600] w-6 text-center mr-2">${driver.position}</span>
+                        <img src="${driverImage}" alt="${fullName}" class="w-8 h-8 object-cover rounded-full mr-2 border-2 border-gray-700">
+                        <img src="https://flagsapi.com/${getCountryCode(driver.Driver.nationality)}/flat/32.png" alt="${driver.Driver.nationality}" class="w-6 h-6 rounded-full mr-2 border-2 border-gray-700">
+                        <div class="flex-1">
+                            <span class="font-bold text-white text-sm">${fullName}</span>
+                            <span class="block text-gray-400 text-xs">${driver.Constructors[0].name}</span>
+                        </div>
+                        <span class="text-base font-bold text-white bg-[#e10600] w-12 h-12 flex items-center justify-center rounded-full shadow">${driver.points}</span>
+                    </li>
+                `;
+            }).join('');
+        } catch (e) {
+            console.error("Error fetching standings:", e);
+            list.innerHTML = `<li class="text-red-400 text-center">Failed to load standings: ${e.message}</li>`;
+        }
+    }
+
+    // Helper to map nationality to country code
+    function getCountryCode(nationality) {
+        const map = {
+            'British': 'GB', 'Dutch': 'NL', 'Spanish': 'ES', 'French': 'FR', 'German': 'DE',
+            'Australian': 'AU', 'Canadian': 'CA', 'Japanese': 'JP', 'Monegasque': 'MC',
+            'Thai': 'TH', 'New Zealander': 'NZ', 'Argentine': 'AR', 'Brazilian': 'BR',
+            'Italian': 'IT', 'Finnish': 'FI', 'American': 'US'
+        };
+        return map[nationality] || 'US';
+    }
+
+    // Initialize standings
+    fetchStandings();
+</script>
+{% endblock %}
