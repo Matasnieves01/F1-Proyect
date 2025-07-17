@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'channels',  # Añadido para soporte de WebSockets
     'uvicorn',  # Añadido para soporte de ASGI
     'f1_drivers',    # App corredores
+    'core',         # App principal
 ]
 
 MIDDLEWARE = [

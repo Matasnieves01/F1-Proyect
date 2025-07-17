@@ -1,18 +1,15 @@
 import requests
 import os
 import logging
-from django.shortcuts import render
+from .models import Escuderia
 from django.templatetags.static import static
 from datetime import datetime, timezone
-from use_cases.race_service import categorize_races
-from django.template.loader import get_template
 import fastf1
 import pandas as pd
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from .forms import RegisterForm, LoginForm
 from use_cases.race_service import categorize_races
-from collections import defaultdict
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -274,3 +271,10 @@ def carreras_view(request):
         'season': int(season)
     }
     return render(request, 'carreras.html', {'carreras': context})
+
+def pilotos(request):
+    return render(request, 'pilots.html')
+
+def lista_escuderias(request):
+    escuderias = Escuderia.objects.all()
+    return render(request, 'escuderias/lista.html', {'escuderias': escuderias})
