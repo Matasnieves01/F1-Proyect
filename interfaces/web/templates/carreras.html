@@ -167,7 +167,11 @@
         </div>
         <div id="chat-content">
             <div id="chat-messages" class="p-5 h-80 overflow-y-auto space-y-4">
-                <!-- Messages will be appended here -->
+                {% if not carreras.actuales %}
+                <div class="mb-2 text-gray-400 text-center">
+                    No hay carrera en vivo, ¡interactúa con la comunidad!
+                </div>
+                {% endif %}
             </div>
             <div class="p-5 border-t border-gray-700">
                 <input id="chat-input" type="text" placeholder="Type a message..."
@@ -175,59 +179,52 @@
             </div>
         </div>
     </div>
+
+    <!-- YouTube IFrame para música Lofi -->
+    <div id="lofi-player" style="display: none;">
+        <iframe id="youtube-player" width="0" height="0" src="https://www.youtube.com/embed/DsBdp-x13UM?enablejsapi=1&autoplay=0&controls=0&loop=1&playlist=DsBdp-x13UM&mute=0" frameborder="0" allowfullscreen></iframe>
+    </div>
 </div>
 
 <script>
-    function openModal(title, location, date, description, winner, winnerImage) {
-        console.log('Opening modal with:', { title, location, date, description, winner, winnerImage });
-        const modal = document.getElementById('raceModal');
-        const modalContent = modal.querySelector('.transform');
-        document.getElementById('modalTitle').textContent = title || 'Unknown Race';
-        document.getElementById('modalLocation').textContent = location || 'N/A';
-        document.getElementById('modalDate').textContent = date || 'N/A';
-        document.getElementById('modalDescription').textContent = description || 'No description available';
-        const winnerElement = document.getElementById('modalWinner');
-        const winnerImageElement = document.getElementById('modalWinnerImage');
-        if (winner && winner !== 'N/A') {
-            winnerElement.textContent = winner;
-            winnerImageElement.src = winnerImage || 'https://via.placeholder.com/150x150?text=No+Winner+Image';
-            winnerImageElement.classList.remove('hidden');
-        } else {
-            winnerElement.textContent = 'N/A';
-            winnerImageElement.classList.add('hidden');
-        }
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modalContent.classList.remove('scale-95', 'opacity-0');
-            modalContent.classList.add('scale-100', 'opacity-100');
-        }, 10);
-    }
-
-    function closeModal() {
-        const modal = document.getElementById('raceModal');
-        const modalContent = modal.querySelector('.transform');
-        modalContent.classList.remove('scale-100', 'opacity-100');
-        modalContent.classList.add('scale-95', 'opacity-0');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 300);
-    }
-
-    document.getElementById('seasonSelect').addEventListener('change', function() {
-        window.location.href = '/carreras/?season=' + this.value;
-    });
-
-    document.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('click', function() {
-            const title = this.getAttribute('onclick').match(/'([^']*)'/g)[0].replace(/'/g, '');
-            const location = this.getAttribute('onclick').match(/'([^']*)'/g)[1].replace(/'/g, '');
-            const date = this.getAttribute('onclick').match(/'([^']*)'/g)[2].replace(/'/g, '');
-            const description = this.getAttribute('onclick').match(/'([^']*)'/g)[3].replace(/'/g, '');
-            const winner = this.getAttribute('onclick').match(/'([^']*)'/g)[4].replace(/'/g, '');
-            const winnerImage = this.getAttribute('onclick').match(/'([^']*)'/g)[5].replace(/'/g, '');
-            openModal(title, location, date, description, winner, winnerImage);
+    // Inicializar el reproductor de YouTube
+    let player;
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('youtube-player', {
+            events: {
+                'onReady': onPlayerReady
+            }
         });
-    });
+    }
+
+    function onPlayerReady(event) {
+        console.log("Player ready, carreras.actuales length:", {{ carreras.actuales|length }});
+        // Reproducir solo si no hay carreras en vivo
+        if (!{{ carreras.actuales|length }}) {
+            event.target.setVolume(50); // Volumen al 50%
+            event.target.playVideo();
+        } else {
+            event.target.stopVideo(); // Pausar si hay carrera en vivo
+        }
+    }
+
+    // Cargar el API de YouTube
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    // Función para verificar el estado de carreras y controlar la música
+    function checkRaceStatus() {
+        if (player && !{{ carreras.actuales|length }}) {
+            player.playVideo();
+        } else if (player) {
+            player.stopVideo();
+        }
+    }
+
+    // Llamar a checkRaceStatus al cargar la página
+    window.onload = checkRaceStatus;
 
     // WebSocket para el chat
     const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
@@ -286,110 +283,6 @@
             toggleIcon.innerHTML = `<path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"></path>`;
         }
     });
-    <!-- Chat -->
-    <div id="chat-container" class="fixed bottom-4 right-4 w-80 bg-gray-800 rounded-lg shadow-xl">
-        <div class="p-4 border-b border-red-600">
-            <h3 class="font-bold text-red-500">Live Chat</h3>
-        </div>
-        <div id="chat-messages" class="p-4 h-64 overflow-y-auto">
-            {% if not carreras.actuales %}
-                <div class="mb-2 text-gray-400 text-center">
-                    No hay carrera en vivo, ¡interactúa con la comunidad!
-                </div>
-            {% endif %}
-        </div>
-        <div class="p-4 border-t border-gray-700">
-            <input id="chat-input" type="text" placeholder="Type a message..." 
-                   class="w-full bg-gray-700 text-white px-3 py-2 rounded">
-        </div>
-    </div>
-
-<!-- YouTube IFrame para música Lofi -->
-<div id="lofi-player" style="display: none;">
-    <iframe id="youtube-player" width="0" height="0" src="https://www.youtube.com/embed/DsBdp-x13UM?enablejsapi=1&autoplay=0&controls=0&loop=1&playlist=DsBdp-x13UM&mute=0" frameborder="0" allowfullscreen></iframe>
-</div>
-
-<script>
-    // Inicializar el reproductor de YouTube
-    let player;
-    function onYouTubeIframeAPIReady() {
-        player = new YT.Player('youtube-player', {
-            events: {
-                'onReady': onPlayerReady
-            }
-        });
-    }
-
-    function onPlayerReady(event) {
-        console.log("Player ready, carreras.actuales length:", {{ carreras.actuales|length }});
-        // Reproducir solo si no hay carreras en vivo
-        if (!{{ carreras.actuales|length }}) {
-            event.target.setVolume(50); // Volumen al 50%
-            event.target.playVideo();
-        } else {
-            event.target.stopVideo(); // Pausar si hay carrera en vivo
-        }
-    }
-
-    // Cargar el API de YouTube
-    var tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    var firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-    // Función para verificar el estado de carreras y controlar la música
-    function checkRaceStatus() {
-        if (player && !{{ carreras.actuales|length }}) {
-            player.playVideo();
-        } else if (player) {
-            player.stopVideo();
-        }
-    }
-
-    // Llamar a checkRaceStatus al cargar la página
-    window.onload = checkRaceStatus;
-
-    // WebSocket para el chat (mantener el código existente)
-    const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-    const host = window.location.host;
-    const chatSocket = new WebSocket(`${protocol}${host}/ws/chat/`);
-
-    chatSocket.onopen = function(e) {
-        console.log("WebSocket connected");
-    };
-
-    chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        const messages = document.getElementById('chat-messages');
-        messages.innerHTML += `
-            <div class="mb-2">
-                <span class="text-red-500 font-bold">${data.user}</span>
-                <span class="text-gray-400 text-xs">${data.timestamp || 'N/A'}</span>
-                <p class="text-white">${data.message}</p>
-            </div>
-        `;
-        messages.scrollTop = messages.scrollHeight;
-    };
-
-    chatSocket.onerror = function(e) {
-        console.error("WebSocket error", e);
-    };
-
-    chatSocket.onclose = function(e) {
-        console.log("WebSocket closed", e.code, e.reason);
-    };
-
-    document.getElementById('chat-input').onkeyup = function(e) {
-        if (e.key === 'Enter') {
-            const message = this.value.trim();
-            if (message) {
-                chatSocket.send(JSON.stringify({
-                    'message': message
-                }));
-                this.value = '';
-            }
-        }
-    };
 
     function openModal(title, location, date, description, winner, winnerImage) {
         console.log('Opening modal with:', { title, location, date, description, winner, winnerImage });
@@ -440,7 +333,6 @@
             }
         });
     });
-
 </script>
 
 <style>
@@ -493,6 +385,7 @@
         #chat-container {
             display: none; /* Hide chat on smaller screens to avoid overlap */
         }
+    }
     #lofi-player {
         position: fixed;
         bottom: 10px;
@@ -500,5 +393,4 @@
         z-index: 1000;
     }
 </style>
-</main>
 {% endblock %}
