@@ -30,7 +30,7 @@ SECRET_KEY = config("SECRET_KEY", default="clave_insegura")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', '0.0.0.0']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 
 # Application definition
@@ -64,7 +64,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [str(BASE_DIR / 'interfaces' / 'web' / 'templates')],
+        'DIRS': [BASE_DIR / 'interfaces' / 'web' / 'templates'],
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -83,7 +83,13 @@ TEMPLATES = [
 
 ASGI_APPLICATION = 'config.asgi.application'  # Añadido para soporte de WebSockets
 
+FASTF1_CACHE_DIR = BASE_DIR / 'storage' / 'fastf1_cache'  # Directorio para caché de FastF1
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
@@ -129,7 +135,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directorio donde se recopilarán los archivos estáticos
 
 STATICFILES_DIRS = [
