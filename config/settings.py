@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'f1_drivers',    # App corredores
     'core',         # App principal
     'f1_teams',     # App escuderías
+]
   
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
